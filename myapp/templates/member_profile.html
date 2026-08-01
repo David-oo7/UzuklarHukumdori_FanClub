@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}{{ member.username }} — Hamjamiyat{% endblock %}
+{% block extra_style %}
+<style>
+  .mp-wrap { max-width: 720px; margin: 0 auto; padding: 40px 6vw 60px; }
+  .mp-card {
+    background: var(--bg-panel); border: 1px solid var(--line);
+    border-radius: 12px; padding: 32px; text-align: center;
+    margin-bottom: 28px;
+  }
+  .mp-avatar {
+    width: 100px; height: 100px; border-radius: 50%;
+    border: 3px solid var(--gold); object-fit: cover;
+    margin: 0 auto 16px; display: block; background: #1a1e14;
+  }
+  .mp-avatar.ph {
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.5rem; color: var(--gold); margin: 0 auto 16px;
+  }
+  .mp-name {
+    font-family: 'Cinzel Decorative', Cinzel, serif;
+    color: var(--gold); font-size: 1.8rem; margin: 0 0 6px;
+  }
+  .mp-meta { color: var(--ink-dim); font-size: 1rem; margin: 4px 0; }
+  .mp-bio {
+    font-family: 'Cormorant Garamond', serif; font-size: 1.15rem;
+    color: var(--ink); margin: 14px 0 0; font-style: italic;
+  }
+  .mp-stats {
+    display: flex; justify-content: center; gap: 24px; margin-top: 20px; flex-wrap: wrap;
+  }
+  .mp-stat .n {
+    font-family: 'Cinzel', serif; color: var(--gold); font-size: 1.4rem; font-weight: 700;
+  }
+  .mp-stat .l { font-size: .75rem; color: var(--ink-dim); text-transform: uppercase; }
+  .mp-section h2 {
+    font-family: 'Cinzel', serif; color: var(--gold); font-size: 1.1rem;
+    border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 12px;
+  }
+  .mp-topic {
+    padding: 10px 0; border-bottom: 1px solid rgba(201,163,78,.1);
+  }
+  .mp-topic a { color: var(--ink); text-decoration: none; }
+  .mp-topic a:hover { color: var(--gold); }
+  .mp-topic .d { color: var(--ink-dim); font-size: .85rem; }
+</style>
+{% endblock %}
+{% block content %}
+<div class="mp-wrap">
+  <div class="mp-card">
+    {% if profile and profile.avatar %}
+    <img class="mp-avatar" src="{{ profile.avatar.url }}" alt="{{ member.username }}">
+    {% else %}
+    <div class="mp-avatar ph">⚔</div>
+    {% endif %}
+    <h1 class="mp-name">{{ member.username }}</h1>
+    {% if profile %}
+    <div class="mp-meta">{{ profile.display_race }} · {{ profile.display_faction }}</div>
+    {% if profile.is_moderator %}<div class="mp-meta" style="color:var(--gold);">✦ Moderator</div>{% endif %}
+    {% if profile.bio %}<p class="mp-bio">« {{ profile.bio }} »</p>{% endif %}
+    <div class="mp-stats">
+      <div class="mp-stat"><div class="n">{{ profile.reputation }}</div><div class="l">Obro‘</div></div>
+      <div class="mp-stat"><div class="n">{{ topics|length }}</div><div class="l">Mavzular</div></div>
+      <div class="mp-stat"><div class="n">{{ posts_count }}</div><div class="l">Javoblar</div></div>
+      <div class="mp-stat"><div class="n">{{ chat_count }}</div><div class="l">Chat</div></div>
+    </div>
+    <div class="mp-meta" style="margin-top:14px;">
+      Qo‘shilgan: {{ profile.joined_at|date:"d.m.Y" }}
+    </div>
+    {% endif %}
+  </div>
+
+  {% if topics %}
+  <div class="mp-section">
+    <h2>So‘nggi mavzular</h2>
+    {% for t in topics %}
+    <div class="mp-topic">
+      <a href="{% url 'topic_detail' t.pk %}">{{ t.title }}</a>
+      <div class="d">{{ t.category.name }} · {{ t.created_at|date:"d.m.Y" }}</div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Yangi mavzu — {{ category.name }}{% endblock %}
+{% block extra_style %}
+<style>
+  .form-wrap {
+    max-width: 640px; margin: 40px auto 60px; padding: 0 6vw;
+  }
+  .form-wrap h1 {
+    font-family: 'Cinzel Decorative', Cinzel, serif;
+    color: var(--gold); font-size: 1.6rem; margin-bottom: 6px;
+  }
+  .form-wrap .sub { color: var(--ink-dim); margin-bottom: 24px; }
+  .form-group { margin-bottom: 18px; }
+  .form-group label {
+    display: block; font-family: 'Cinzel', serif; color: var(--gold);
+    font-size: .85rem; margin-bottom: 6px; letter-spacing: .04em;
+  }
+  .form-input, .form-group input, .form-group textarea {
+    width: 100%; background: var(--bg-panel); border: 1px solid var(--line);
+    color: var(--ink); padding: 12px 14px; border-radius: 6px;
+    font-family: 'Cormorant Garamond', serif; font-size: 1.1rem;
+    box-sizing: border-box;
+  }
+  .form-input:focus, .form-group input:focus, .form-group textarea:focus {
+    outline: none; border-color: var(--gold);
+  }
+  .btn-gold {
+    background: var(--gold); color: #141810; border: none;
+    padding: 12px 28px; border-radius: 6px;
+    font-family: 'Cinzel', serif; font-weight: 600; cursor: pointer;
+  }
+  .btn-gold:hover { background: var(--gold-light); }
+  .btn-outline {
+    border: 1px solid var(--line); color: var(--ink); padding: 12px 20px;
+    border-radius: 6px; text-decoration: none; font-family: 'Cinzel', serif;
+    margin-right: 10px;
+  }
+</style>
+{% endblock %}
+{% block content %}
+<div class="form-wrap">
+  <h1>Yangi mavzu</h1>
+  <p class="sub">{{ category.icon }} {{ category.name }}</p>
+
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="id_title">Sarlavha</label>
+      {{ form.title }}
+      {% if form.title.errors %}<div style="color:#e66;">{{ form.title.errors }}</div>{% endif %}
+    </div>
+    <div class="form-group">
+      <label for="id_body">Matn</label>
+      {{ form.body }}
+      {% if form.body.errors %}<div style="color:#e66;">{{ form.body.errors }}</div>{% endif %}
+    </div>
+    <a class="btn-outline" href="{% url 'forum_category' category.slug %}">Bekor</a>
+    <button type="submit" class="btn-gold">Mavzuni ochish</button>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<meta name="description" content="Uzuklar Hukmdori fan sahifasi - J.R.R. Tolkien asarlari, qahramonlar, fraksiyalar va O'rta Yer haqida batafsil ma'lumot.">
+<meta name="keywords" content="Uzuklar Hukmdori, Tolkien, O'rta Yer, Gandalf, Frodo, LOTR, Hobbit, Silmarillion">
+<meta name="author" content="Fan sahifasi">
+<meta name="theme-color" content="#0b0d0a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta property="og:title" content="Uzuklar Hukmdori — Fan Sahifasi">
+<meta property="og:description" content="Tolkien olami haqida chuqur bilimlar, qahramonlar, fraksiyalar va O'rta Yer xaritasi.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="uz_UZ">
+<title>{% block title %}Uzuklar Hukmdori — Fan Sahifasi{% endblock %}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --gold:#c9a34e;
+    --gold-light:#e8d18a;
+    --bg-dark:#0b0d0a;
+    --bg-panel:#12160f;
+    --ink:#e6e0cf;
+    --ink-dim:#a89f8a;
+    --line: rgba(201,163,78,.35);
+    --accent: #c9a34e;
+    --hero-glow: rgba(201,163,78,.35);
+    --nav-bg-image: url('/media/nav-bg.jpg');
+    --page-bg-image: url('/media/page-bg.jpg');
+  }
+
+  /* ═══════════════════════════════════════════
+     IRQ TEMALARI — har bir xalqning o'z uslubi
+     ═══════════════════════════════════════════ */
+
+  /* 🏹 ELF — Kumush-ko'k, yulduzli, nafis */
+  body.theme-elf {
+    --gold: #9ec5e8;
+    --gold-light: #c8e4f8;
+    --bg-dark: #060c14;
+    --bg-panel: #0a1220;
+    --ink: #ddeeff;
+    --ink-dim: #8aabcc;
+    --line: rgba(158,197,232,.3);
+    --accent: #7ab8e0;
+    --hero-glow: rgba(158,197,232,.4);
+  }
+  body.theme-elf nav {
+    background: linear-gradient(rgba(6,12,20,.92), rgba(6,12,20,.92)), var(--nav-bg-image, none);
+    border-bottom-color: rgba(158,197,232,.3);
+  }
+  body.theme-elf .brand { color: #9ec5e8; }
+  body.theme-elf .ring-glyph {
+    border-color: #9ec5e8;
+    box-shadow: 0 0 30px rgba(158,197,232,.5), inset 0 0 12px rgba(158,197,232,.3);
+  }
+  body.theme-elf body {
+    background: radial-gradient(ellipse at top, #0d1a2e 0%, #060c14 60%);
+  }
+
+  /* 👑 GONDOR (ODAM) — Oltin-tosh, qirollik */
+  body.theme-human {
+    --gold: #c9a34e;
+    --gold-light: #e8d18a;
+    --bg-dark: #0d0b08;
+    --bg-panel: #15120a;
+    --ink: #f0e8d0;
+    --ink-dim: #b0a080;
+    --line: rgba(201,163,78,.4);
+    --accent: #d4a843;
+    --hero-glow: rgba(201,163,78,.45);
+  }
+
+  /* 👁 MORDOR — Qizil-qora, olov, zulmat */
+  body.theme-wizard:not(.theme-wizard) { /* placeholder */ }
+  body.theme-mordor {
+    --gold: #cc4422;
+    --gold-light: #ff7755;
+    --bg-dark: #080202;
+    --bg-panel: #120606;
+    --ink: #f0d0c8;
+    --ink-dim: #a06858;
+    --line: rgba(204,68,34,.35);
+    --accent: #dd3311;
+    --hero-glow: rgba(204,68,34,.5);
+  }
+  body.theme-mordor nav {
+    background: linear-gradient(rgba(8,2,2,.95), rgba(8,2,2,.95)), var(--nav-bg-image, none);
+    border-bottom-color: rgba(204,68,34,.35);
+  }
+  body.theme-mordor .brand { color: #cc4422; }
+  body.theme-mordor .ring-glyph {
+    border-color: #cc4422;
+    box-shadow: 0 0 30px rgba(204,68,34,.6), inset 0 0 12px rgba(204,68,34,.4);
+  }
+  body.theme-mordor .hero::before {
+    background:
+      radial-gradient(circle at 50% 30%, rgba(204,68,34,.15), transparent 55%),
+      repeating-linear-gradient(0deg, rgba(255,80,30,.02) 0px, transparent 2px, transparent 4px);
+  }
+
+  /* 🐴 ROHIRRIM — Yashil-jigarrang, dasht, kuch */
+  body.theme-rohirrim {
+    --gold: #8fbf9f;
+    --gold-light: #b0dfc0;
+    --bg-dark: #060e06;
+    --bg-panel: #0a1408;
+    --ink: #d8f0d8;
+    --ink-dim: #80a880;
+    --line: rgba(143,191,159,.3);
+    --accent: #6da880;
+    --hero-glow: rgba(143,191,159,.4);
+  }
+  body.theme-rohirrim nav {
+    background: linear-gradient(rgba(6,14,6,.92), rgba(6,14,6,.92)), var(--nav-bg-image, none);
+    border-bottom-color: rgba(143,191,159,.3);
+  }
+  body.theme-rohirrim .brand { color: #8fbf9f; }
+  body.theme-rohirrim .ring-glyph {
+    border-color: #8fbf9f;
+    box-shadow: 0 0 30px rgba(143,191,159,.5), inset 0 0 12px rgba(143,191,159,.3);
+  }
+
+  /* 🧙 SEHRGAR (WIZARD) — Kulrang-oq, mistik, sirli */
+  body.theme-wizard {
+    --gold: #c8c8d8;
+    --gold-light: #e8e8f8;
+    --bg-dark: #080810;
+    --bg-panel: #101018;
+    --ink: #e8e8f8;
+    --ink-dim: #9898b8;
+    --line: rgba(200,200,216,.3);
+    --accent: #a0a8c8;
+    --hero-glow: rgba(200,200,216,.4);
+  }
+  body.theme-wizard nav {
+    background: linear-gradient(rgba(8,8,16,.92), rgba(8,8,16,.92)), var(--nav-bg-image, none);
+    border-bottom-color: rgba(200,200,216,.3);
+  }
+  body.theme-wizard .brand { color: #c8c8d8; }
+  body.theme-wizard .ring-glyph {
+    border-color: #c8c8d8;
+    box-shadow: 0 0 30px rgba(200,200,216,.5), inset 0 0 12px rgba(200,200,216,.3);
+  }
+
+  /* ⛏️ GNOM (DWARF) — Bronza, tosh, temir */
+  body.theme-dwarf {
+    --gold: #b87333;
+    --gold-light: #d4943f;
+    --bg-dark: #0a0704;
+    --bg-panel: #140e08;
+    --ink: #e8d8c0;
+    --ink-dim: #a08060;
+    --line: rgba(184,115,51,.35);
+    --accent: #cd853f;
+    --hero-glow: rgba(184,115,51,.45);
+  }
+  body.theme-dwarf nav {
+    background: linear-gradient(rgba(10,7,4,.92), rgba(10,7,4,.92)), var(--nav-bg-image, none);
+    border-bottom-color: rgba(184,115,51,.35);
+  }
+  body.theme-dwarf .brand { color: #b87333; }
+  body.theme-dwarf .ring-glyph {
+    border-color: #b87333;
+    box-shadow: 0 0 30px rgba(184,115,51,.5), inset 0 0 12px rgba(184,115,51,.3);
+  }
+
+  /* 🌳 HOBBIT — Yashil-sariq, tinch, issiq */
+  body.theme-hobbit {
+    --gold: #c8aa40;
+    --gold-light: #e0cc70;
+    --bg-dark: #080e04;
+    --bg-panel: #101806;
+    --ink: #f0e8c8;
+    --ink-dim: #a09860;
+    --line: rgba(200,170,64,.35);
+    --accent: #b89a38;
+    --hero-glow: rgba(200,170,64,.4);
+  }
+  body.theme-hobbit nav {
+    background: linear-gradient(rgba(8,14,4,.92), rgba(8,14,4,.92)), var(--nav-bg-image, none);
+    border-bottom-color: rgba(200,170,64,.35);
+  }
+  body.theme-hobbit .brand { color: #c8aa40; }
+  body.theme-hobbit .ring-glyph {
+    border-color: #c8aa40;
+    box-shadow: 0 0 30px rgba(200,170,64,.5), inset 0 0 12px rgba(200,170,64,.3);
+  }
+
+  /* 🌿 ENT — To'q yashil, o'rmon, qadimiy tabiat */
+  body.theme-ent {
+    --gold: #6b9e4a;
+    --gold-light: #88c060;
+    --bg-dark: #040a02;
+    --bg-panel: #081004;
+    --ink: #d0e8c0;
+    --ink-dim: #708860;
+    --line: rgba(107,158,74,.3);
+    --accent: #5a8a3a;
+    --hero-glow: rgba(107,158,74,.4);
+  }
+  body.theme-ent nav {
+    background: linear-gradient(rgba(4,10,2,.92), rgba(4,10,2,.92)), var(--nav-bg-image, none);
+    border-bottom-color: rgba(107,158,74,.3);
+  }
+  body.theme-ent .brand { color: #6b9e4a; }
+  body.theme-ent .ring-glyph {
+    border-color: #6b9e4a;
+    box-shadow: 0 0 30px rgba(107,158,74,.5), inset 0 0 12px rgba(107,158,74,.3);
+  }
+
+  /* Yangi irqlar */
+  body.theme-ainur { --gold:#e2d4a5; --gold-light:#fff4c8; --bg-dark:#0a0c20; --bg-panel:#13172b; --ink:#f2efff; --ink-dim:#bbb8d3; --line:rgba(226,212,165,.35); --accent:#d7c481; --hero-glow:rgba(226,212,165,.48); }
+  body.theme-orc, body.theme-uruk_hai { --gold:#a5b55d; --gold-light:#c8d783; --bg-dark:#090d05; --bg-panel:#121908; --ink:#e3e8cf; --ink-dim:#9ca57a; --line:rgba(165,181,93,.32); --accent:#879a42; --hero-glow:rgba(139,154,65,.45); }
+  body.theme-troll { --gold:#8f9a91; --gold-light:#bec8bd; --bg-dark:#10110e; --bg-panel:#191b16; --ink:#e0e3dc; --ink-dim:#989f94; --line:rgba(143,154,145,.3); --accent:#778178; --hero-glow:rgba(143,154,145,.36); }
+  body.theme-dragon { --gold:#d66c25; --gold-light:#ffb15e; --bg-dark:#130401; --bg-panel:#220b04; --ink:#ffdfc4; --ink-dim:#bf8b69; --line:rgba(214,108,37,.38); --accent:#e24e19; --hero-glow:rgba(226,78,25,.54); }
+  body.theme-warg { --gold:#9d7858; --gold-light:#d2ad83; --bg-dark:#0d0907; --bg-panel:#17100c; --ink:#eadbca; --ink-dim:#aa9580; --line:rgba(157,120,88,.32); --accent:#8d6044; --hero-glow:rgba(157,120,88,.42); }
+
+  /* Fraksiya irqqa tegishli asosiy uslubni yanada aniq qiladi. */
+  body.theme-faction-gondor { --gold:#d6b84c; --gold-light:#fff0a2; --accent:#d6b84c; }
+  body.theme-faction-rohan { --gold:#82b563; --gold-light:#c6e59f; --accent:#6f9f50; }
+  body.theme-faction-rivendell { --gold:#9dcff0; --gold-light:#dcf3ff; --accent:#74b6df; }
+  body.theme-faction-lothlorien { --gold:#d8bf58; --gold-light:#fff0a0; --accent:#c6a93e; }
+  body.theme-faction-woodland_realm { --gold:#6fbd8b; --gold-light:#b9f0ce; --accent:#4e9c6a; }
+  body.theme-faction-erebor { --gold:#c9833d; --gold-light:#f0bd73; --accent:#aa652b; }
+  body.theme-faction-mordor { --gold:#cf4426; --gold-light:#ff8261; --accent:#d33016; }
+  body.theme-faction-isengard { --gold:#b5b9ad; --gold-light:#e5e7dd; --accent:#858c80; }
+  body.theme-faction-goblin { --gold:#9ca75d; --gold-light:#ced587; --accent:#7f8d43; }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  /* Yagona Uzuk kursori — oddiy va bosilganda bir xil */
+  html, body, a, button, input, textarea, select, label, [role="button"],
+  .btn, .vol, .char-card, .race-card, .realm-card, .loc-item, .marker,
+  .chat-icon-btn, .sticker-btn, nav a {
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23f0d78c'/%3E%3Cstop offset='45%25' stop-color='%23c9a34e'/%3E%3Cstop offset='100%25' stop-color='%238a6b28'/%3E%3C/linearGradient%3E%3Cfilter id='glow'%3E%3CfeGaussianBlur stdDeviation='1.2' result='b'/%3E%3CfeMerge%3E%3CfeMergeNode in='b'/%3E%3CfeMergeNode in='SourceGraphic'/%3E%3C/feMerge%3E%3C/filter%3E%3C/defs%3E%3Ccircle cx='16' cy='16' r='11' fill='none' stroke='url(%23g)' stroke-width='4.5' filter='url(%23glow)'/%3E%3Ccircle cx='16' cy='16' r='7.2' fill='none' stroke='%23e8d18a' stroke-width='1.2' opacity='.85'/%3E%3Cellipse cx='12' cy='11' rx='3.5' ry='1.6' fill='%23fff6d0' opacity='.45'/%3E%3C/svg%3E") 16 16, auto !important;
+  }
+  a:active, button:active, .btn:active, [role="button"]:active {
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23f0d78c'/%3E%3Cstop offset='45%25' stop-color='%23c9a34e'/%3E%3Cstop offset='100%25' stop-color='%238a6b28'/%3E%3C/linearGradient%3E%3Cfilter id='glow'%3E%3CfeGaussianBlur stdDeviation='1.2' result='b'/%3E%3CfeMerge%3E%3CfeMergeNode in='b'/%3E%3CfeMergeNode in='SourceGraphic'/%3E%3C/feMerge%3E%3C/filter%3E%3C/defs%3E%3Ccircle cx='16' cy='16' r='11' fill='none' stroke='url(%23g)' stroke-width='4.5' filter='url(%23glow)'/%3E%3Ccircle cx='16' cy='16' r='7.2' fill='none' stroke='%23e8d18a' stroke-width='1.2' opacity='.85'/%3E%3Cellipse cx='12' cy='11' rx='3.5' ry='1.6' fill='%23fff6d0' opacity='.45'/%3E%3C/svg%3E") 16 16, auto !important;
+  }
+  body{
+    background:
+      linear-gradient(rgba(11,13,10,.78), rgba(11,13,10,.88)),
+      var(--page-bg-image, none),
+      radial-gradient(ellipse at top, #1a1f14 0%, var(--bg-dark) 60%);
+    background-size: cover, cover, auto;
+    background-position: center, center, top;
+    background-attachment: fixed, fixed, scroll;
+    background-repeat: no-repeat;
+    color:var(--ink);
+    font-family:'Cormorant Garamond', serif;
+    font-size:19px;
+    line-height:1.7;
+    min-height:100vh;
+  }
+  h1,h2,h3,.brand{ font-family:'Cinzel', serif; letter-spacing:.04em; }
+
+  a{color:var(--gold-light);}
+
+  nav{
+    position:sticky; top:0; z-index:50;
+    display:flex; align-items:center; gap:24px;
+    padding:16px 6vw;
+    background:
+      linear-gradient(rgba(8,10,6,.88), rgba(8,10,6,.88)),
+      var(--nav-bg-image, none);
+    background-size:cover;
+    background-position:center;
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--line);
+    flex-wrap:wrap;
+  }
+  .brand{ color:var(--gold); font-weight:700; font-size:1.3rem; flex-shrink:0; }
+  .brand span{ color:var(--ink-dim); font-family:'Cormorant Garamond',serif; font-size:.95rem; display:block; letter-spacing:.15em; }
+  nav ul{
+    list-style:none; display:flex; flex-wrap:wrap; align-items:center; gap:4px 18px;
+    flex:1;
+  }
+  nav ul li{ }
+  nav ul li a, nav ul li .nav-user{ display:inline-block; padding:4px 0; }
+  nav a{
+    text-decoration:none; font-family:'Cinzel Decorative', 'Cinzel', serif;
+    font-weight:700; font-size:.74rem; letter-spacing:.06em; text-transform:uppercase;
+    transition:.25s; white-space:nowrap; text-shadow:0 0 12px rgba(0,0,0,.6);
+  }
+  /* O'rta Yer xalqlariga xos ranglar — har bir havola o'z ohangida */
+  nav li:nth-child(1) a{ color:#f0c9e0; }               /* Yangiliklar — och pushti */
+  nav li:nth-child(2) a{ color:#d9c27e; }               /* Shire — oltin jigarrang */
+  nav li:nth-child(3) a{ color:#c9a34e; }               /* Kitoblar — oltin */
+  nav li:nth-child(4) a{ color:#e0a05b; }               /* Qahramonlar — amber */
+  nav li:nth-child(5) a{ color:#8fbf9f; }               /* O'rta Yer — yashil */
+  nav li:nth-child(6) a{ color:#9ec5e8; }               /* Xalqlar — kumush-havorang */
+  nav li:nth-child(7) a{ color:#d9a3c9; }               /* Fraksiyalar — pushti */
+  nav li:nth-child(8) a{ color:#a3d9c9; }               /* Xarita — firuza */
+  nav li:nth-child(9) a{ color:#d98c8c; }               /* O'yin — qizg'ish */
+  nav li:nth-child(10) a{ color:#c9a3d9; }               /* Muhokama — binafsha */
+  nav li:nth-child(11) a{ color:#e8d18a; }               /* Gandalf — kulrang-oltin */
+  nav a:hover{ color:var(--gold-light); text-shadow:0 0 18px rgba(201,163,78,.7); }
+  .nav-user{
+    font-family:'Cinzel Decorative',serif; color:var(--gold-light); font-size:.8rem;
+    letter-spacing:.06em;
+  }
+  .nav-cta{
+    color:var(--gold-light) !important;
+  }
+
+  /* Kirish / Ro'yxatdan o'tish — hamburger menyudan tashqarida, doim ko'rinadi */
+  .nav-auth-bar{
+    margin-left:auto; display:flex; align-items:center; gap:16px;
+  }
+  .nav-auth-bar a{
+    text-decoration:none; font-family:'Cinzel Decorative','Cinzel',serif;
+    font-weight:700; font-size:.74rem; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--ink); white-space:nowrap; transition:.25s;
+    text-shadow:0 0 12px rgba(0,0,0,.6);
+  }
+  .nav-auth-bar a:hover{ color:var(--gold-light); }
+  .nav-auth-bar .nav-cta{
+    border:1px solid var(--gold); padding:7px 16px; color:var(--gold-light) !important;
+  }
+  .nav-auth-bar .nav-cta:hover{ background:var(--gold); color:#141810 !important; }
+  .nav-auth-bar .nav-user{
+    border:1px solid var(--line); padding:6px 14px; font-size:.76rem;
+  }
+  @media (max-width:520px){
+    .nav-auth-bar{ gap:10px; }
+    .nav-auth-bar a{ font-size:.66rem; }
+    .nav-auth-bar .nav-cta{ padding:6px 10px; }
+  }
+
+  /* ═══════════════════════════════════════════
+     RESPONSIVE DESIGN - Mobile, Tablet, Desktop
+     ═══════════════════════════════════════════ */
+
+  /* Mobile - 320px to 480px */
+  @media (max-width:480px){
+    nav{
+      padding:12px 4vw;
+      gap:16px;
+    }
+    .brand{ font-size:1.1rem; }
+    .brand span{ font-size:.8rem; }
+    nav ul{
+      gap:4px 12px;
+      flex-wrap:wrap;
+    }
+    nav a{ font-size:.65rem; }
+    .nav-auth-bar{
+      gap:8px;
+      margin-left:0;
+      width:100%;
+      justify-content:center;
+      margin-top:8px;
+    }
+    .nav-auth-bar a{ font-size:.6rem; }
+    .nav-auth-bar .nav-cta{ padding:5px 12px; }
+    .hero{
+      padding:30px 4vw;
+      min-height:75vh;
+    }
+    .hero h1{
+      font-size:2rem;
+    }
+    .ring-glyph{
+      width:60px;
+      height:60px;
+    }
+  }
+
+  /* Mobile Large - 481px to 768px */
+  @media (min-width:481px) and (max-width:768px){
+    nav{
+      padding:14px 5vw;
+      gap:20px;
+    }
+    .brand{ font-size:1.2rem; }
+    nav ul{
+      gap:4px 14px;
+    }
+    nav a{ font-size:.7rem; }
+    .nav-auth-bar{
+      gap:12px;
+    }
+    .nav-auth-bar a{ font-size:.68rem; }
+    .nav-auth-bar .nav-cta{ padding:6px 14px; }
+    .hero{
+      padding:35px 5vw;
+      min-height:80vh;
+    }
+    .hero h1{
+      font-size:2.5rem;
+    }
+    .ring-glyph{
+      width:68px;
+      height:68px;
+    }
+  }
+
+  /* Tablet - 769px to 1024px */
+  @media (min-width:769px) and (max-width:1024px){
+    nav{
+      padding:15px 5.5vw;
+      gap:22px;
+    }
+    .brand{ font-size:1.25rem; }
+    nav ul{
+      gap:4px 16px;
+    }
+    nav a{ font-size:.72rem; }
+    .nav-auth-bar{
+      gap:14px;
+    }
+    .nav-auth-bar a{ font-size:.74rem; }
+    .nav-auth-bar .nav-cta{ padding:7px 15px; }
+    .hero{
+      padding:38px 5.5vw;
+      min-height:85vh;
+    }
+    .hero h1{
+      font-size:3rem;
+    }
+    .ring-glyph{
+      width:70px;
+      height:70px;
+    }
+  }
+
+  /* Desktop - 1025px and above */
+  @media (min-width:1025px){
+    nav{
+      padding:16px 6vw;
+      gap:24px;
+    }
+    .brand{ font-size:1.3rem; }
+    nav ul{
+      gap:4px 18px;
+    }
+    nav a{ font-size:.74rem; }
+    .nav-auth-bar{
+      gap:16px;
+    }
+    .nav-auth-bar a{ font-size:.76rem; }
+    .nav-auth-bar .nav-cta{ padding:7px 16px; }
+    .hero{
+      padding:40px 6vw;
+      min-height:88vh;
+    }
+    .hero h1{
+      font-size:clamp(2.6rem,7vw,5rem);
+    }
+    .ring-glyph{
+      width:74px;
+      height:74px;
+    }
+  }
+
+  /* Hamburger menu for mobile */
+  @media (max-width:768px){
+    .nav-toggle{
+      display:block;
+      position:absolute;
+      right:16px;
+      top:50%;
+      transform:translateY(-50%);
+      background:none;
+      border:none;
+      color:var(--gold);
+      font-size:1.5rem;
+      cursor:pointer;
+      z-index:100;
+    }
+    nav ul{
+      display:none;
+      flex-direction:column;
+      position:absolute;
+      top:100%;
+      left:0;
+      right:0;
+      background:var(--bg-panel);
+      padding:20px;
+      border-bottom:1px solid var(--line);
+      gap:12px;
+    }
+    nav ul.active{
+      display:flex;
+    }
+    nav ul li{
+      width:100%;
+      text-align:center;
+    }
+    nav ul li a, nav ul li .nav-user{
+      display:block;
+      padding:8px;
+    }
+  }
+
+  @media (min-width:769px){
+    .nav-toggle{
+      display:none;
+    }
+    nav ul{
+      display:flex !important;
+      flex-direction:row !important;
+      position:static !important;
+      background:none !important;
+      padding:0 !important;
+      border:none !important;
+    }
+    nav ul li{
+      width:auto !important;
+      text-align:left !important;
+    }
+  }
+
+  .hero{
+    position:relative;
+    min-height:88vh;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; padding:40px 6vw;
+    overflow:hidden;
+  }
+  .hero::before{
+    content:"";
+    position:absolute; inset:0;
+    background:
+      radial-gradient(circle at 50% 30%, rgba(201,163,78,.10), transparent 55%),
+      repeating-linear-gradient(0deg, rgba(255,255,255,.015) 0px, transparent 2px, transparent 4px);
+    pointer-events:none;
+  }
+  .ring-glyph{
+    width:74px;height:74px;border-radius:50%;
+    border:3px solid var(--gold);
+    box-shadow:0 0 30px rgba(201,163,78,.5), inset 0 0 12px rgba(201,163,78,.4);
+    margin-bottom:26px;
+  }
+  .hero h1{
+    font-size:clamp(2.6rem,7vw,5rem);
+    color:var(--gold-light);
+    text-shadow:0 0 30px rgba(201,163,78,.35);
+    margin-bottom:10px;
+  }
+  .hero .subtitle{
+    font-family:'Cinzel',serif;
+    color:var(--ink-dim);
+    letter-spacing:.3em;
+    text-transform:uppercase;
+    font-size:.85rem;
+    margin-bottom:28px;
+  }
+  .hero p.lead{
+    max-width:640px; color:var(--ink-dim); font-size:1.25rem; font-style:italic;
+    margin-bottom:34px;
+  }
+  .btn{
+    display:inline-block;
+    border:1px solid var(--gold);
+    color:var(--gold-light);
+    padding:12px 34px;
+    text-decoration:none;
+    font-family:'Cinzel',serif;
+    font-size:.8rem;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    transition:.25s;
+    background:rgba(201,163,78,.06);
+  }
+  .btn:hover{ background:var(--gold); color:#141810; box-shadow:0 0 25px rgba(201,163,78,.5);}
+
+  .divider{
+    display:flex; align-items:center; gap:16px;
+    max-width:360px; margin:56px auto; color:var(--gold);
+  }
+  .divider::before,.divider::after{ content:""; flex:1; height:1px; background:var(--line); }
+
+  section{ padding:90px 6vw; max-width:1100px; margin:0 auto; }
+  .eyebrow{
+    font-family:'Cinzel',serif; color:var(--gold); font-size:.78rem;
+    letter-spacing:.25em; text-transform:uppercase; text-align:center; margin-bottom:12px;
+  }
+  h2.section-title{
+    text-align:center; font-size:clamp(1.8rem,4vw,2.6rem); color:var(--ink); margin-bottom:14px;
+  }
+  .section-desc{ text-align:center; color:var(--ink-dim); max-width:680px; margin:0 auto 56px; font-size:1.15rem; }
+
+  .about-grid{ display:grid; grid-template-columns:1fr 1fr; gap:50px; align-items:center; }
+  .about-card{
+    background:var(--bg-panel); border:1px solid var(--line); padding:34px;
+  }
+  .about-card h3{ color:var(--gold-light); font-size:1.3rem; margin-bottom:14px; }
+  .stat-row{ display:flex; gap:30px; margin-top:26px; flex-wrap:wrap; }
+  .stat{ text-align:center; }
+  .stat b{ display:block; font-family:'Cinzel',serif; color:var(--gold); font-size:1.6rem; }
+  .stat span{ color:var(--ink-dim); font-size:.85rem; text-transform:uppercase; letter-spacing:.08em; }
+
+  .timeline{ display:grid; grid-template-columns:repeat(3,1fr); gap:28px; }
+  .vol{
+    display:block; text-decoration:none;
+    background:var(--bg-panel); border:1px solid var(--line); padding:30px 24px; text-align:center;
+    position:relative; transition:.25s; cursor:pointer;
+  }
+  .vol:hover{ border-color:var(--gold); transform:translateY(-6px); box-shadow:0 10px 30px rgba(0,0,0,.4); }
+  .vol .num{ font-family:'Cinzel',serif; color:var(--gold); font-size:.8rem; letter-spacing:.2em; margin-bottom:10px;}
+  .vol h3{ color:var(--ink); font-size:1.25rem; margin-bottom:12px; }
+  .vol p{ color:var(--ink-dim); font-size:1.02rem; margin-bottom:18px; }
+  .vol .dl{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:'Cinzel',serif; font-size:.72rem; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--gold-light); border-top:1px solid var(--line); padding-top:16px; width:100%; justify-content:center;
+  }
+  .vol .dl svg{ width:14px; height:14px; }
+
+  .char-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:24px; }
+  .char-card{
+    background:var(--bg-panel); border:1px solid var(--line); padding:26px 22px;
+    text-align:center;
+  }
+  .char-icon{
+    width:56px;height:56px; margin:0 auto 16px; border-radius:50%;
+    border:2px solid var(--gold); display:flex; align-items:center; justify-content:center;
+    font-size:1.5rem; color:var(--gold-light);
+  }
+  .char-card h3{ color:var(--gold-light); font-size:1.15rem; margin-bottom:6px; }
+  .char-card .role{ color:var(--gold); font-size:.75rem; letter-spacing:.14em; text-transform:uppercase; font-family:'Cinzel',serif; margin-bottom:10px; }
+  .char-card p{ color:var(--ink-dim); font-size:.98rem; }
+
+  .realm-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:26px; }
+  .realm-card{ border-left:3px solid var(--gold); padding:6px 0 6px 22px; }
+  .realm-card h3{ color:var(--ink); font-size:1.2rem; margin-bottom:8px; }
+  .realm-card p{ color:var(--ink-dim); }
+
+  /* RACES */
+  .race-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:24px; }
+  .race-card{
+    background:var(--bg-panel); border:1px solid var(--line); padding:28px 24px;
+    text-align:center; transition:.25s;
+  }
+  .race-card:hover{ border-color:var(--gold); transform:translateY(-4px); }
+  .race-icon{
+    width:54px;height:54px; margin:0 auto 16px; border-radius:50%;
+    border:2px solid var(--gold); display:flex; align-items:center; justify-content:center;
+    font-size:1.4rem; color:var(--gold-light);
+  }
+  .race-card h3{ color:var(--gold-light); font-size:1.15rem; margin-bottom:10px; }
+  .race-card p{ color:var(--ink-dim); font-size:.95rem; line-height:1.6; text-align:left; }
+
+  .hero-mini{
+    margin-top:18px; padding-top:16px; border-top:1px solid var(--line);
+    display:flex; gap:12px; align-items:flex-start; text-align:left;
+  }
+  .hero-avatar{
+    flex-shrink:0; width:40px;height:40px; border-radius:50%;
+    border:1.5px solid var(--gold); display:flex; align-items:center; justify-content:center;
+    font-size:1.1rem; background:rgba(201,163,78,.06);
+  }
+  .hero-mini .hero-name{ font-family:'Cinzel',serif; color:var(--gold-light); font-size:.92rem; margin-bottom:2px; }
+  .hero-mini .hero-role{ color:var(--gold); font-size:.68rem; letter-spacing:.1em; text-transform:uppercase; font-family:'Cinzel',serif; margin-bottom:5px; }
+  .hero-mini .hero-bio{ color:var(--ink-dim); font-size:.88rem; line-height:1.5; }
+
+  /* GAME DOWNLOAD */
+  .game-box{
+    background:var(--bg-panel); border:1px solid var(--line);
+    padding:50px 6vw; text-align:center; max-width:680px; margin:0 auto;
+  }
+  .game-box .ring-glyph{ width:60px;height:60px; margin:0 auto 22px; }
+  .game-box h3{ color:var(--gold-light); font-size:1.4rem; margin-bottom:14px; }
+  .game-box p{ color:var(--ink-dim); margin-bottom:30px; }
+
+  /* CHAT */
+  .chat-box{
+    background:var(--bg-panel); border:1px solid var(--line);
+    max-width:680px; margin:0 auto; display:flex; flex-direction:column;
+  }
+  .chat-messages{
+    height:360px; overflow-y:auto; padding:22px 24px; display:flex; flex-direction:column; gap:14px;
+  }
+  .chat-msg{ border-bottom:1px solid rgba(201,163,78,.15); padding-bottom:10px; }
+  .chat-msg .who{ font-family:'Cinzel',serif; color:var(--gold); font-size:.78rem; letter-spacing:.08em; }
+  .chat-msg .when{ color:var(--ink-dim); font-size:.75rem; margin-left:8px; }
+  .chat-msg .txt{ color:var(--ink); margin-top:4px; }
+  .chat-empty{ color:var(--ink-dim); text-align:center; margin-top:30px; font-style:italic; }
+  .chat-form{
+    display:flex; gap:10px; padding:18px 20px; border-top:1px solid var(--line); flex-wrap:wrap;
+  }
+  .chat-form input[type=text]{
+    background:#0e120c; border:1px solid var(--line); color:var(--ink);
+    padding:10px 14px; font-family:'Cormorant Garamond',serif; font-size:1rem;
+  }
+  #chat-name{ width:130px; }
+  #chat-name[readonly]{ opacity:.85; cursor:not-allowed; border-color:var(--gold); }
+  #chat-text{ flex:1; min-width:160px; }
+  .chat-form input::placeholder{ color:var(--ink-dim); }
+  .chat-form button{
+    border:1px solid var(--gold); background:rgba(201,163,78,.08); color:var(--gold-light);
+    padding:10px 22px; font-family:'Cinzel',serif; font-size:.75rem; letter-spacing:.14em; text-transform:uppercase;
+    cursor:pointer; transition:.2s;
+  }
+  .chat-form button:hover{ background:var(--gold); color:#141810; }
+  .chat-status{ text-align:center; font-size:.78rem; color:var(--ink-dim); margin-top:12px; }
+  .chat-status.online{ color:#7bd88f; }
+  .chat-status.offline{ color:#d8817b; }
+
+  /* Chat responsive */
+  @media (max-width:480px){
+    .chat-box{
+      max-width:95%;
+      margin:0 auto;
+    }
+    .chat-messages{
+      height:300px;
+      padding:16px;
+    }
+    .chat-form{
+      padding:14px 16px;
+      gap:8px;
+    }
+    .chat-form input[type=text]{
+      padding:8px 12px;
+      font-size:.9rem;
+    }
+    #chat-name{ width:100px; }
+    #chat-text{ min-width:120px; }
+    .chat-form button{
+      padding:8px 16px;
+      font-size:.7rem;
+    }
+    .chat-msg .who{ font-size:.7rem; }
+    .chat-msg .when{ font-size:.68rem; }
+    .chat-img{
+      max-width:180px;
+      max-height:180px;
+    }
+  }
+
+  @media (min-width:481px) and (max-width:768px){
+    .chat-box{
+      max-width:90%;
+    }
+    .chat-messages{
+      height:340px;
+      padding:18px 20px;
+    }
+    .chat-form{
+      padding:16px 18px;
+    }
+    #chat-name{ width:110px; }
+    #chat-text{ min-width:140px; }
+    .chat-img{
+      max-width:200px;
+      max-height:200px;
+    }
+  }
+
+  /* Rasm xabarlari */
+  .chat-img{
+    max-width:220px; max-height:220px; border-radius:4px; border:1px solid var(--line);
+    display:block; margin-top:4px; cursor:pointer;
+  }
+  .chat-sticker{ font-size:2.4rem; line-height:1; margin-top:2px; }
+
+  /* Ikonka tugmalar (stiker / rasm) */
+  .chat-icon-btn{
+    background:none; border:1px solid var(--line); color:var(--gold-light);
+    font-size:1.1rem; width:40px; height:40px; flex-shrink:0; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; transition:.2s;
+    padding:0 !important;
+  }
+  .chat-icon-btn:hover{ border-color:var(--gold); background:rgba(201,163,78,.08) !important; color:var(--gold-light) !important; }
+  .chat-icon-btn.active{ border-color:var(--gold); background:rgba(201,163,78,.15) !important; }
+
+  /* Stiker paneli */
+  .sticker-panel{
+    display:none; padding:14px 20px; border-top:1px solid var(--line); background:rgba(0,0,0,.15);
+  }
+  .sticker-panel.open{ display:block; }
+  .sticker-grid{
+    display:grid; grid-template-columns:repeat(8, 1fr); gap:8px;
+  }
+  .sticker-btn{
+    background:none; border:1px solid transparent; font-size:1.4rem; padding:6px; cursor:pointer;
+    border-radius:4px; transition:.15s;
+  }
+  .sticker-btn:hover{ background:rgba(201,163,78,.15); border-color:var(--line); }
+  @media (max-width:520px){
+    .sticker-grid{ grid-template-columns:repeat(6, 1fr); }
+  }
+
+  /* GANDALF AI YORDAMCHISI */
+  .gandalf-box{
+    background:var(--bg-panel); border:1px solid var(--line);
+    max-width:680px; margin:0 auto; display:flex; flex-direction:column;
+  }
+  .gandalf-messages{
+    height:360px; overflow-y:auto; padding:22px 24px; display:flex; flex-direction:column; gap:16px;
+  }
+  .gandalf-msg{ display:flex; gap:12px; align-items:flex-start; }
+  .gandalf-msg.user-msg{ flex-direction:row-reverse; }
+  .gandalf-avatar{
+    flex-shrink:0; width:36px; height:36px; border-radius:50%;
+    border:1.5px solid var(--gold); display:flex; align-items:center; justify-content:center;
+    font-size:1rem; color:var(--gold-light); background:rgba(201,163,78,.08);
+  }
+  .gandalf-bubble{
+    background:#0e120c; border:1px solid var(--line); padding:10px 14px;
+    color:var(--ink); font-size:.98rem; line-height:1.55; max-width:75%;
+  }
+  .gandalf-msg.user-msg .gandalf-bubble{
+    background:rgba(201,163,78,.1); border-color:var(--gold);
+  }
+
+  /* Gandalf responsive */
+  @media (max-width:480px){
+    .gandalf-box{
+      max-width:95%;
+    }
+    .gandalf-messages{
+      height:300px;
+      padding:16px;
+      gap:12px;
+    }
+    .gandalf-avatar{
+      width:32px;
+      height:32px;
+      font-size:.9rem;
+    }
+    .gandalf-bubble{
+      padding:8px 12px;
+      font-size:.9rem;
+      max-width:80%;
+    }
+  }
+
+  @media (min-width:481px) and (max-width:768px){
+    .gandalf-box{
+      max-width:90%;
+    }
+    .gandalf-messages{
+      height:340px;
+      padding:18px 20px;
+    }
+    .gandalf-bubble{
+      max-width:78%;
+    }
+  }
+  .gandalf-msg.gandalf-error .gandalf-bubble{ color:#d8817b; border-color:#d8817b; }
+  .gandalf-form{
+    display:flex; gap:10px; padding:18px 20px; border-top:1px solid var(--line);
+  }
+  .gandalf-form input[type=text]{
+    flex:1; background:#0e120c; border:1px solid var(--line); color:var(--ink);
+    padding:10px 14px; font-family:'Cormorant Garamond',serif; font-size:1rem;
+  }
+  .gandalf-form input::placeholder{ color:var(--ink-dim); }
+  .gandalf-form button{
+    border:1px solid var(--gold); background:rgba(201,163,78,.08); color:var(--gold-light);
+    padding:10px 22px; font-family:'Cinzel',serif; font-size:.75rem; letter-spacing:.14em; text-transform:uppercase;
+    cursor:pointer; transition:.2s;
+  }
+  .gandalf-form button:hover{ background:var(--gold); color:#141810; }
+  .gandalf-form button:disabled{ opacity:.5; cursor:not-allowed; }
+  .gandalf-typing{ color:var(--ink-dim); font-style:italic; font-size:.9rem; }
+
+  /* Gandalf form responsive */
+  @media (max-width:480px){
+    .gandalf-form{
+      padding:14px 16px;
+      gap:8px;
+    }
+    .gandalf-form input[type=text]{
+      padding:8px 12px;
+      font-size:.9rem;
+    }
+    .gandalf-form button{
+      padding:8px 16px;
+      font-size:.7rem;
+    }
+  }
+
+  @media (min-width:481px) and (max-width:768px){
+    .gandalf-form{
+      padding:16px 18px;
+    }
+  }
+
+  footer{
+    border-top:1px solid var(--line); padding:40px 6vw; text-align:center;
+    color:var(--ink-dim); font-size:.9rem;
+  }
+  footer .ring-glyph{ width:34px;height:34px; margin:0 auto 16px; }
+  footer .fine{ font-size:.78rem; opacity:.6; margin-top:10px; max-width:560px; margin-left:auto; margin-right:auto; }
+
+  /* Footer responsive */
+  @media (max-width:480px){
+    footer{
+      padding:30px 4vw;
+      font-size:.8rem;
+    }
+    footer .ring-glyph{
+      width:28px;
+      height:28px;
+    }
+    footer .fine{
+      font-size:.7rem;
+      max-width:90%;
+    }
+  }
+
+  @media (min-width:481px) and (max-width:768px){
+    footer{
+      padding:35px 5vw;
+    }
+  }
+
+  /* Hamburger va Responsive */
+  .hamburger {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--gold-light);
+    font-size: 1.8rem;
+    cursor: pointer;
+    margin-left: auto;
+    padding: 8px;
+  }
+  @media (max-width: 950px) {
+    nav { justify-content: space-between; }
+    .hamburger { display: block; }
+    nav ul {
+      display: none;
+      flex-direction: column;
+      width: 100%;
+      background: rgba(8,10,6,0.98);
+      padding: 15px 0;
+      gap: 12px;
+      margin-top: 10px;
+      border-top: 1px solid var(--line);
+      order: 4;
+    }
+    nav ul.active { display: flex; }
+    .nav-auth-bar { margin-left: 0; order: 2; }
+    .hamburger { order: 3; }
+  }
+
+  @media (max-width:480px){
+    .hamburger{
+      font-size:1.5rem;
+      padding:6px;
+    }
+    nav ul{
+      padding:12px 0;
+      gap:10px;
+    }
+    nav ul li a, nav ul li .nav-user{
+      font-size:.65rem;
+      padding:6px;
+    }
+  }
+
+  @media (max-width:800px){
+    .about-grid{ grid-template-columns:1fr; }
+    .timeline{ grid-template-columns:1fr; }
+    .char-grid, .realm-grid, .race-grid { grid-template-columns: repeat(2, 1fr); }
+    .hero h1 { font-size: clamp(2rem, 6vw, 3.5rem); }
+  }
+
+  @media (max-width: 520px) {
+    .char-grid, .realm-grid, .race-grid { grid-template-columns: 1fr; }
+    .hero { padding: 30px 4vw; min-height: 70vh; }
+    .section-title { font-size: 1.8rem; }
+  }
+
+  /* Card grids responsive */
+  @media (max-width:480px){
+    .char-grid, .realm-grid, .race-grid, .book-grid{
+      grid-template-columns:1fr;
+      gap:16px;
+    }
+    .char-card, .realm-card, .race-card, .book-card{
+      padding:16px;
+    }
+    .section-title{
+      font-size:1.6rem;
+    }
+  }
+
+  @media (min-width:481px) and (max-width:768px){
+    .char-grid, .realm-grid, .race-grid, .book-grid{
+      grid-template-columns:repeat(2, 1fr);
+      gap:18px;
+    }
+    .char-card, .realm-card, .race-card, .book-card{
+      padding:18px;
+    }
+    .section-title{
+      font-size:1.8rem;
+    }
+  }
+
+  @media (min-width:769px) and (max-width:1024px){
+    .char-grid, .realm-grid, .race-grid, .book-grid{
+      grid-template-columns:repeat(3, 1fr);
+      gap:20px;
+    }
+  }
+
+  /* E'lon banner */
+  .announce-bar{
+    background: linear-gradient(90deg, rgba(201,163,78,.18), rgba(201,163,78,.08));
+    border-bottom:1px solid var(--line);
+    padding:12px 6vw;
+  }
+  .announce-item{
+    display:flex; align-items:flex-start; gap:12px;
+    max-width:960px; margin:0 auto 8px;
+  }
+  .announce-item:last-child{ margin-bottom:0; }
+  .announce-item .announce-icon{ color:var(--gold); font-size:1.1rem; flex-shrink:0; }
+  .announce-item strong{
+    font-family:'Cinzel',serif; color:var(--gold-light);
+    font-size:.9rem; letter-spacing:.04em;
+  }
+  .announce-item p{
+    margin:2px 0 0; color:var(--ink-dim); font-size:.95rem; line-height:1.45;
+  }
+
+</style>
+{% block extra_style %}{% endblock %}
+</head>
+<body class="{% if user_race %}theme-{{ user_race }}{% endif %} {% if user_faction %}theme-faction-{{ user_faction }}{% endif %}">
+
+<nav>
+  <div class="brand">Uzuklar Hukmdori<span>Fanlar sahifasi</span></div>
+
+  <button class="hamburger" id="hamburger-btn" aria-label="Menyu">☰</button>
+
+  <ul id="nav-menu">
+    <li><a href="{% url 'home' %}#news">Yangiliklar</a></li>
+    <li><a href="{% url 'home' %}#about">Asar haqida</a></li>
+    <li><a href="{% url 'home' %}#timeline">Kitoblar</a></li>
+    <li><a href="{% url 'home' %}#characters">Qahramonlar</a></li>
+    <li><a href="{% url 'home' %}#realms">O'rta yer</a></li>
+    <li><a href="{% url 'home' %}#races">Orta yerdagi xalqlar</a></li>
+    <li><a href="{% url 'home' %}#factions">Fraksiyalar</a></li>
+    <li><a href="{% url 'xarita_page' %}">O'rta Yer xaritasi</a></li>
+    <li><a href="{% url 'home' %}#game">O'yin</a></li>
+    <li><a href="{% url 'muhokama_page' %}">Muhokama</a></li>
+    <li><a href="{% url 'forum_index' %}">Forum</a></li>
+    <li><a href="{% url 'hamjamiyat' %}">Hamjamiyat</a></li>
+    <li><a href="{% url 'gandalf_page' %}">Gandalf</a></li>
+  </ul>
+
+  <div class="nav-auth-bar">
+    {% if user.is_authenticated %}
+      <a href="{% url 'profile' %}" class="nav-user">{{ user.username }}</a>
+      <a href="{% url 'logout' %}">Chiqish</a>
+    {% else %}
+      <a href="{% url 'login' %}">Kirish</a>
+      <a href="{% url 'register' %}" class="nav-cta">Ro'yxatdan o'tish</a>
+    {% endif %}
+  </div>
+</nav>
+
+{% if announcements %}
+<div class="announce-bar" role="status">
+  {% for a in announcements %}
+  <div class="announce-item">
+    <span class="announce-icon">✦</span>
+    <div>
+      <strong>{{ a.title }}</strong>
+      <p>{{ a.body }}</p>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+{% block content %}{% endblock %}
+
+<footer>
+  <div class="ring-glyph"></div>
+  <p>Bu — muxlislar tomonidan tayyorlangan norasmiy fan-sahifa bo'lib, faqat tanishtiruv maqsadida yaratilgan.</p>
+  <p class="fine">"Uzuklar Hukmdori" — J. R. R. Tolkienning mualliflik huquqi bilan himoyalangan asari. Ushbu sahifa asl matn yoki tasvirlarni o'z ichiga olmaydi va tijorat maqsadida ishlatilmaydi.</p>
+</footer>
+
+{% block extra_script %}{% endblock %}
+
+<script>
+  const hamburgerBtn = document.getElementById('hamburger-btn');
+  const navMenuBlock = document.getElementById('nav-menu');
+  if(hamburgerBtn && navMenuBlock) {
+    hamburgerBtn.addEventListener('click', () => {
+      navMenuBlock.classList.toggle('active');
+      // Change icon based on state
+      if(navMenuBlock.classList.contains('active')) {
+        hamburgerBtn.textContent = '✕';
+      } else {
+        hamburgerBtn.textContent = '☰';
+      }
+    });
+
+    // Close menu when clicking outside
+    document.addEventListener('click', (e) => {
+      if(!navMenuBlock.contains(e.target) && !hamburgerBtn.contains(e.target)) {
+        navMenuBlock.classList.remove('active');
+        hamburgerBtn.textContent = '☰';
+      }
+    });
+
+    // Close menu when clicking on a link
+    const navLinks = navMenuBlock.querySelectorAll('a');
+    navLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        navMenuBlock.classList.remove('active');
+        hamburgerBtn.textContent = '☰';
+      });
+    });
+  }
+
+  // Handle window resize to reset menu state
+  window.addEventListener('resize', () => {
+    if(window.innerWidth > 950 && navMenuBlock) {
+      navMenuBlock.classList.remove('active');
+      if(hamburgerBtn) hamburgerBtn.textContent = '☰';
+    }
+  });
+</script>
+</body>
+</html>

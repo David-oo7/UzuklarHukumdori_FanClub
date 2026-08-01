@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>O'rta Yer xaritasi — Uzuklar Hukmdori</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --gold:#c9a34e; --gold-light:#e8d18a; --bg-dark:#0b0d0a; --bg-panel:#12160f;
+    --ink:#e6e0cf; --ink-dim:#a89f8a; --line: rgba(201,163,78,.35);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  /* Yagona Uzuk kursori */
+  html, body, a, button, input, .loc-item, .marker, .zoom-controls button {
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23f0d78c'/%3E%3Cstop offset='45%25' stop-color='%23c9a34e'/%3E%3Cstop offset='100%25' stop-color='%238a6b28'/%3E%3C/linearGradient%3E%3Cfilter id='glow'%3E%3CfeGaussianBlur stdDeviation='1.2' result='b'/%3E%3CfeMerge%3E%3CfeMergeNode in='b'/%3E%3CfeMergeNode in='SourceGraphic'/%3E%3C/feMerge%3E%3C/filter%3E%3C/defs%3E%3Ccircle cx='16' cy='16' r='11' fill='none' stroke='url(%23g)' stroke-width='4.5' filter='url(%23glow)'/%3E%3Ccircle cx='16' cy='16' r='7.2' fill='none' stroke='%23e8d18a' stroke-width='1.2' opacity='.85'/%3E%3Cellipse cx='12' cy='11' rx='3.5' ry='1.6' fill='%23fff6d0' opacity='.45'/%3E%3C/svg%3E") 16 16, auto !important;
+  }
+  a:active, button:active {
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23f0d78c'/%3E%3Cstop offset='45%25' stop-color='%23c9a34e'/%3E%3Cstop offset='100%25' stop-color='%238a6b28'/%3E%3C/linearGradient%3E%3Cfilter id='glow'%3E%3CfeGaussianBlur stdDeviation='1.2' result='b'/%3E%3CfeMerge%3E%3CfeMergeNode in='b'/%3E%3CfeMergeNode in='SourceGraphic'/%3E%3C/feMerge%3E%3C/filter%3E%3C/defs%3E%3Ccircle cx='16' cy='16' r='11' fill='none' stroke='url(%23g)' stroke-width='4.5' filter='url(%23glow)'/%3E%3Ccircle cx='16' cy='16' r='7.2' fill='none' stroke='%23e8d18a' stroke-width='1.2' opacity='.85'/%3E%3Cellipse cx='12' cy='11' rx='3.5' ry='1.6' fill='%23fff6d0' opacity='.45'/%3E%3C/svg%3E") 16 16, auto !important;
+  }
+  body{
+    background: radial-gradient(ellipse at top, #1a1f14 0%, var(--bg-dark) 60%);
+    color:var(--ink); font-family:'Cormorant Garamond', serif; font-size:17px;
+    min-height:100vh;
+  }
+  h1,h2,h3{ font-family:'Cinzel', serif; letter-spacing:.04em; }
+
+  header{
+    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;
+    padding:20px 5vw; border-bottom:1px solid var(--line);
+    background:rgba(8,10,6,.7);
+  }
+  header h1{ color:var(--gold-light); font-size:1.5rem; }
+  header h1 span{ display:block; color:var(--ink-dim); font-size:.8rem; font-family:'Cormorant Garamond',serif; letter-spacing:.15em; font-weight:400; margin-top:2px; }
+  .back{ color:var(--ink-dim); text-decoration:none; font-size:.9rem; }
+  .back:hover{ color:var(--gold-light); }
+
+  .layout{
+    display:grid; grid-template-columns:260px 1fr; gap:0; min-height:calc(100vh - 76px);
+  }
+  @media (max-width:900px){
+    .layout{ grid-template-columns:1fr; }
+  }
+
+  /* SIDEBAR */
+  .sidebar{
+    background:var(--bg-panel); border-right:1px solid var(--line); padding:20px;
+    max-height:calc(100vh - 76px); overflow-y:auto;
+  }
+  .search-box{
+    width:100%; background:#0e120c; border:1px solid var(--line); color:var(--ink);
+    padding:9px 12px; font-family:'Cormorant Garamond',serif; font-size:.95rem; margin-bottom:18px;
+  }
+  .search-box::placeholder{ color:var(--ink-dim); }
+  .sidebar h3{ color:var(--gold); font-size:.72rem; letter-spacing:.14em; text-transform:uppercase; margin-bottom:10px; }
+  .loc-list{ list-style:none; display:flex; flex-direction:column; gap:2px; margin-bottom:24px; }
+  .loc-item{
+    display:flex; align-items:center; gap:10px; padding:8px 10px; cursor:pointer;
+    border-left:2px solid transparent; transition:.15s; font-size:.92rem;
+  }
+  .loc-item:hover{ background:rgba(201,163,78,.08); }
+  .loc-item.active{ border-left-color:var(--gold); background:rgba(201,163,78,.12); color:var(--gold-light); }
+  .loc-item .ic{ font-size:1rem; width:22px; text-align:center; flex-shrink:0; }
+
+  /* MAP AREA — parallax / depth */
+  .map-wrap{
+    position:relative; overflow:hidden;
+    perspective: 1200px;
+    background:
+      radial-gradient(ellipse at 20% 30%, rgba(80,110,70,.25), transparent 55%),
+      radial-gradient(ellipse at 70% 70%, rgba(120,50,30,.2), transparent 50%),
+      linear-gradient(160deg, #3a3320 0%, #2b2718 45%, #241f14 100%);
+  }
+  .map-canvas{
+    position:relative; width:100%; aspect-ratio:16/10; min-height:420px;
+    transform-style: preserve-3d;
+    will-change: transform;
+    transition: transform 0.12s ease-out;
+  }
+  .map-layer{
+    position:absolute; inset:-4%;
+    transform-style: preserve-3d;
+    will-change: transform;
+    transition: transform 0.15s ease-out;
+    pointer-events: none;
+  }
+  .map-layer-back{
+    z-index: 0;
+    filter: blur(0.4px) brightness(0.92);
+  }
+  .map-layer-mid{
+    z-index: 1;
+  }
+  .map-layer-front{
+    z-index: 3;
+    pointer-events: none;
+  }
+  .map-layer-front .depth-haze{
+    position:absolute; inset:0;
+    background:
+      radial-gradient(ellipse at 30% 20%, rgba(201,163,78,.06), transparent 50%),
+      radial-gradient(ellipse at 80% 70%, rgba(40,20,10,.18), transparent 45%);
+    pointer-events:none;
+  }
+  .map-canvas svg{ position:absolute; inset:0; width:100%; height:100%; }
+  .custom-map-img{
+    display:none; position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:1;
+  }
+  .custom-map-img.loaded{ display:block; }
+  .custom-map-img.loaded ~ svg{ display:none; }
+  #markers-container{ position:absolute; inset:0; z-index:4; pointer-events:none; }
+  #markers-container .marker{ pointer-events:auto; }
+  .marker{
+    transition: transform 0.15s ease-out, box-shadow 0.2s;
+  }
+  .map-depth-hint{
+    position:absolute; bottom:12px; right:14px; z-index:6;
+    font-family:'Cinzel',serif; font-size:.65rem; letter-spacing:.12em;
+    color:rgba(232,209,138,.55); text-transform:uppercase;
+    pointer-events:none; text-shadow:0 0 8px rgba(0,0,0,.8);
+  }
+
+  .zoom-controls{
+    position:absolute; top:14px; left:14px; z-index:5; display:flex; flex-direction:column; gap:6px;
+  }
+  .zoom-controls button{
+    width:32px; height:32px; background:rgba(8,10,6,.8); border:1px solid var(--gold);
+    color:var(--gold-light); font-size:1.1rem; cursor:pointer; font-family:'Cinzel',serif;
+  }
+  .zoom-controls button:hover{ background:var(--gold); color:#141810; }
+
+  .marker{
+    position:absolute; transform:translate(-50%,-50%); z-index:4; cursor:pointer;
+    display:flex; flex-direction:column; align-items:center; gap:4px;
+  }
+  .marker .dot{
+    width:26px; height:26px; border-radius:50%; background:rgba(8,10,6,.85);
+    border:2px solid var(--gold); display:flex; align-items:center; justify-content:center;
+    font-size:.85rem; transition:.2s; box-shadow:0 0 10px rgba(0,0,0,.5);
+  }
+  .marker:hover .dot, .marker.active .dot{
+    background:var(--gold); transform:scale(1.15); box-shadow:0 0 16px rgba(201,163,78,.7);
+  }
+  .marker .label{
+    font-family:'Cinzel',serif; font-size:.68rem; letter-spacing:.04em; color:var(--gold-light);
+    background:rgba(8,10,6,.75); padding:2px 7px; white-space:nowrap; text-shadow:0 0 6px rgba(0,0,0,.8);
+  }
+
+  /* DETAIL PANEL */
+  .detail-overlay{
+    position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:100;
+    display:none; align-items:center; justify-content:center; padding:20px;
+  }
+  .detail-overlay.open{ display:flex; }
+  .detail-panel{
+    background:var(--bg-panel); border:1px solid var(--gold); max-width:440px; width:100%;
+    max-height:85vh; overflow-y:auto; box-shadow:0 0 50px rgba(0,0,0,.6);
+  }
+  .detail-head{
+    display:flex; align-items:center; justify-content:space-between; padding:18px 22px;
+    border-bottom:1px solid var(--line);
+  }
+  .detail-head h2{ color:var(--gold-light); font-size:1.3rem; }
+  .detail-close{ background:none; border:none; color:var(--ink-dim); font-size:1.3rem; cursor:pointer; }
+  .detail-close:hover{ color:var(--gold-light); }
+  .detail-icon-big{
+    width:64px; height:64px; border-radius:50%; border:2px solid var(--gold); margin:22px auto 4px;
+    display:flex; align-items:center; justify-content:center; font-size:1.8rem; color:var(--gold-light);
+  }
+  .detail-photo{
+    display:none; width:100%; max-height:220px; object-fit:cover;
+    border-bottom:1px solid var(--line);
+  }
+  .detail-photo.loaded{ display:block; }
+  .detail-photo.loaded ~ .detail-icon-big{ display:none; }
+  .detail-body{ padding:6px 22px 24px; }
+  .detail-body p.desc{ color:var(--ink); line-height:1.6; margin-bottom:16px; text-align:center; }
+  .detail-facts{ display:flex; flex-direction:column; gap:8px; margin-bottom:16px; }
+  .detail-facts .fact{ display:flex; gap:8px; font-size:.9rem; }
+  .detail-facts .fact b{ color:var(--gold); font-family:'Cinzel',serif; font-size:.7rem; letter-spacing:.08em; text-transform:uppercase; flex-shrink:0; width:110px; }
+  .detail-facts .fact span{ color:var(--ink-dim); }
+  .notable-list{ list-style:none; }
+  .notable-list li{ color:var(--ink-dim); font-size:.88rem; padding:4px 0 4px 16px; position:relative; }
+  .notable-list li::before{ content:"◆"; position:absolute; left:0; color:var(--gold); font-size:.6rem; top:8px; }
+
+  /* LEGEND + TABLE */
+  .below{
+    padding:26px 5vw; border-top:1px solid var(--line);
+  }
+  .legend{ display:flex; flex-wrap:wrap; gap:16px; margin-bottom:26px; }
+  .legend .item{ display:flex; align-items:center; gap:6px; font-size:.85rem; color:var(--ink-dim); }
+  .legend .sw{ width:18px; height:18px; border-radius:50%; border:1.5px solid var(--gold); display:flex; align-items:center; justify-content:center; font-size:.65rem; }
+
+  table{ width:100%; border-collapse:collapse; font-size:.88rem; }
+  th{ text-align:left; color:var(--gold); font-family:'Cinzel',serif; font-size:.68rem; letter-spacing:.1em; text-transform:uppercase; padding:8px 10px; border-bottom:1px solid var(--line); }
+  td{ padding:8px 10px; color:var(--ink-dim); border-bottom:1px solid rgba(201,163,78,.1); }
+  tr:hover td{ color:var(--ink); }
+{% include "theme_variables.html" %}
+</style>
+</head>
+<body class="{% if user_race %}theme-{{ user_race }}{% endif %} {% if user_faction %}theme-faction-{{ user_faction }}{% endif %}">
+
+<header>
+  <h1>O'rta Yer<span>Interaktiv xarita</span></h1>
+  <a href="{% url 'home' %}" class="back">← Bosh sahifaga qaytish</a>
+</header>
+
+<div class="layout">
+  <aside class="sidebar">
+    <input type="text" class="search-box" id="loc-search" placeholder="Qidirish...">
+    <h3>Hududlar</h3>
+    <ul class="loc-list" id="loc-list"></ul>
+  </aside>
+
+  <div class="map-wrap">
+    <div class="map-canvas" id="map-canvas">
+      <div class="zoom-controls">
+        <button id="zoom-in">+</button>
+        <button id="zoom-out">−</button>
+      </div>
+      <div class="map-layer map-layer-back" id="layer-back" aria-hidden="true"></div>
+      <div class="map-layer map-layer-mid" id="layer-mid">
+      <img class="custom-map-img" id="custom-map-img" src="/media/map-bg.png" alt="O'rta Yer xaritasi">
+      <svg viewBox="0 0 1000 620" preserveAspectRatio="xMidYMid slice" id="map-svg">
+        <defs>
+          <radialGradient id="seaGrad" cx="30%" cy="40%" r="70%">
+            <stop offset="0%" stop-color="#3a5f6e"/>
+            <stop offset="100%" stop-color="#1c2f38"/>
+          </radialGradient>
+          <linearGradient id="landGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#4d5a3a"/>
+            <stop offset="100%" stop-color="#8a6b3f"/>
+          </linearGradient>
+          <linearGradient id="mordorGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#5c2a1e"/>
+            <stop offset="100%" stop-color="#1a0d08"/>
+          </linearGradient>
+        </defs>
+
+        <rect width="1000" height="620" fill="url(#seaGrad)"/>
+
+        <!-- Asosiy quruqlik -->
+        <path d="M120,60 Q260,20 420,70 Q600,40 760,110 Q900,140 950,260 Q970,380 880,480 Q800,560 650,580 Q480,600 340,540 Q200,500 150,400 Q80,300 90,180 Q95,110 120,60 Z"
+              fill="url(#landGrad)" opacity="0.92"/>
+
+        <!-- Shire (yashil hudud, shimoli-g'arb) -->
+        <ellipse cx="230" cy="190" rx="95" ry="60" fill="#5f7a45" opacity="0.55"/>
+
+        <!-- Mirkwood / Lothlorien o'rmonlari -->
+        <ellipse cx="620" cy="230" rx="70" ry="90" fill="#2e4a2a" opacity="0.6"/>
+        <ellipse cx="560" cy="330" rx="55" ry="50" fill="#2e4a2a" opacity="0.55"/>
+
+        <!-- Tog' tizmasi (Misty Mountains) - zigzag chiziq -->
+        <path d="M430,60 L455,110 L440,150 L465,200 L448,250 L470,300 L452,360 L475,420 L460,470"
+              stroke="#6b6b6b" stroke-width="14" fill="none" stroke-linecap="round" opacity="0.7"/>
+        <path d="M430,60 L455,110 L440,150 L465,200 L448,250 L470,300 L452,360 L475,420 L460,470"
+              stroke="#a8a8a0" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.5"/>
+
+        <!-- Janubiy tekisliklar (Rohan/Gondor) -->
+        <ellipse cx="560" cy="440" rx="130" ry="80" fill="#8a7a45" opacity="0.4"/>
+
+        <!-- Mordor (janubi-sharq, qorong'u) -->
+        <path d="M760,380 Q860,370 910,430 Q940,480 900,540 Q850,580 780,560 Q730,530 735,460 Q740,410 760,380 Z"
+              fill="url(#mordorGrad)" opacity="0.85"/>
+
+        <!-- Daryo -->
+        <path d="M470,80 Q490,200 510,320 Q520,420 480,540" stroke="#4a7a8a" stroke-width="3" fill="none" opacity="0.5"/>
+      </svg>
+      </div>
+      <div class="map-layer map-layer-front" id="layer-front" aria-hidden="true">
+        <div class="depth-haze"></div>
+      </div>
+      <div id="markers-container"></div>
+      <div class="map-depth-hint">Sichqoncha bilan chuqurlik</div>
+    </div>
+  </div>
+</div>
+
+<div class="below">
+  <div class="legend" id="legend"></div>
+  <table id="coord-table">
+    <thead>
+      <tr><th>Joy</th><th>Hudud</th><th>Turi</th></tr>
+    </thead>
+    <tbody id="coord-tbody"></tbody>
+  </table>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="detail-overlay" id="detail-overlay">
+  <div class="detail-panel">
+    <div class="detail-head">
+      <h2 id="detail-name">—</h2>
+      <button class="detail-close" id="detail-close">✕</button>
+    </div>
+    <img class="detail-photo" id="detail-photo" alt="">
+    <div class="detail-icon-big" id="detail-icon">✦</div>
+    <div class="detail-body">
+      <p class="desc" id="detail-desc"></p>
+      <div class="detail-facts">
+        <div class="fact"><b>Hudud</b><span id="detail-region"></span></div>
+        <div class="fact"><b>Aholi</b><span id="detail-inhabitants"></span></div>
+        <div class="fact"><b>Turi</b><span id="detail-type"></span></div>
+      </div>
+      <h3 style="color:var(--gold); font-size:.75rem; letter-spacing:.1em; text-transform:uppercase; margin-bottom:8px;">Diqqatga sazovor joylar</h3>
+      <ul class="notable-list" id="detail-notable"></ul>
+    </div>
+  </div>
+</div>
+
+<script>
+const LOCATIONS = [
+  { id:'forlindon', name:'Forlindon', icon:'⭐', type:'elf', region:'Eriador', inhabitants:'Elflar', x:17, y:13,
+    desc:"Shimoli-g'arbiy qirg'oqdagi qadimiy elf o'lkasi, dengiz bilan chambarchas bog'liq.",
+    notable:["Qirg'oq qo'riqxonasi"]},
+  { id:'angmar', name:'Angmar', icon:'🗼', type:'dark', region:'Forodwaith', inhabitants:"Noma'lum kuchlar", x:50, y:9,
+    desc:"Shimoldagi sovuq va tashlab ketilgan qorong'u o'lka, qadimda yovuzlik markazi bo'lgan.",
+    notable:['Vayron qal\'a']},
+  { id:'erebor', name:'Erebor', icon:'⛰️', type:'dwarf', region:'Rhovanion', inhabitants:'Gnomlar', x:75, y:10,
+    desc:"Yolg'iz Tog' ostidagi gnom qirolligi, boyliklari bilan mashhur.",
+    notable:['Oltin xazina']},
+  { id:'bree', name:'Bree', icon:'🏘️', type:'town', region:'Eriador', inhabitants:'Odamlar va hobbitlar', x:33, y:24,
+    desc:"Turli xalqlar aralash yashaydigan chegara qishlog'i, sayohatchilar to'xtaydigan joy.",
+    notable:['Sakrovchi Poni mehmonxonasi']},
+  { id:'shire', name:'Shire (Hobbiton)', icon:'🌿', type:'shire', region:'Eriador', inhabitants:'Hobbitlar', x:21, y:27,
+    desc:"Yashil tepaliklar va tinch qishloqlardan iborat, hobbitlar yashaydigan osoyishta diyor.",
+    notable:['Bag End', 'Bree yoli', 'Uch fermer']},
+  { id:'rivendell', name:'Rivendell', icon:'⭐', type:'elf', region:'Eriador', inhabitants:'Elflar', x:44, y:26,
+    desc:"Vodiyda joylashgan, elflar boshpana topgan qadimiy va donishmand shahar.",
+    notable:['Kengash zali', "Elrond uyi"]},
+  { id:'mirkwood', name:'Mirkwood', icon:'🌲', type:'forest', region:'Rhovanion', inhabitants:'Elflar (Uzoq Sharq)', x:63, y:23,
+    desc:"Qorong'u va xavfli qadimiy o'rmon, ko'plab sirli mavjudotlar makoni.",
+    notable:['Elf qiroli saroyi']},
+  { id:'moria', name:'Moria (Xazad-dum)', icon:'⛏️', type:'dwarf', region:'Misty tog\'lari', inhabitants:"Gnomlar (tashlab ketilgan)", x:32, y:43,
+    desc:"Tog' ostidagi ulkan va sirli qadimiy konlar tarmog'i, bir vaqtlar gnom qirolligi.",
+    notable:['Balin qabri', "Ko'prik"]},
+  { id:'lothlorien', name:'Lothlórien', icon:'🌲', type:'elf', region:'Rhovanion', inhabitants:'Elflar', x:53, y:39,
+    desc:"Oltin barglar bilan qoplangan qadimiy o'rmon qirolligi.",
+    notable:["Galadriel oynasi"]},
+  { id:'rohan', name:'Edoras (Rohan)', icon:'🐴', type:'kingdom', region:'Rohan', inhabitants:'Rohirrimlar', x:50, y:55,
+    desc:"Keng dashtlarda otliq jangchilari yashaydigan qudratli qirollik poytaxti.",
+    notable:['Oltin zal (Meduseld)']},
+  { id:'greyhavens', name:'Kulrang Bandargoh', icon:'⚓', type:'port', region:'Eriador', inhabitants:'Elflar', x:19, y:68,
+    desc:"G'arbga ketuvchi elflar uchun so'nggi port, abadiy yurtga sayohat boshlanadigan joy.",
+    notable:['Kemalar iskalasi']},
+  { id:'gondor', name:'Minas Tirit (Gondor)', icon:'👑', type:'kingdom', region:'Gondor', inhabitants:'Odamlar', x:58, y:71,
+    desc:"Toshdan qad rostlagan buyuk qal'a-shahar, qadimiy qirollikning so'nggi tayanchi.",
+    notable:['Oq Daraxt', "Qirol saroyi"]},
+  { id:'minasmorgul', name:'Minas Morgul', icon:'🗼', type:'dark', region:'Mordor', inhabitants:"Nazgullar", x:76, y:64,
+    desc:"Bir vaqtlar Gondorning qadimiy qal'asi, endi zulmat kuchlariga xizmat qiluvchi qorong'u qal'a.",
+    notable:["Qorong'u darvoza"]},
+  { id:'mordor', name:'Barad-dur (Mordor)', icon:'👁', type:'dark', region:'Mordor', inhabitants:"Orklar", x:84, y:61,
+    desc:"Kulrang tog'lar bilan o'ralgan, xavf va zulmat hukm suradigan qorong'u yurt.",
+    notable:["Zulmat minorasi"]},
+  { id:'mountdoom', name:"Mount Doom", icon:'🌋', type:'dark', region:'Mordor', inhabitants:"Hech kim", x:85, y:68,
+    desc:"Vulqon tog'i, qudratli va xavfli kuchlar shu yerda yaratilgan.",
+    notable:["Otashin teshik"]},
+];
+
+// Har bir joy uchun rasm yo'lini avtomatik belgilaymiz: media/locations/<id>.jpg
+LOCATIONS.forEach(loc => { loc.img = '/media/locations/' + loc.id + '.jpg'; });
+
+const TYPE_LABELS = {
+  shire:'Shire', town:'Shahar/Qishloq', elf:'Elf yurti', dwarf:'Gnom yurti',
+  forest:"O'rmon", kingdom:'Qirollik', dark:"Qorong'u yurt", port:'Port',
+};
+
+const listEl = document.getElementById('loc-list');
+const markersEl = document.getElementById('markers-container');
+const legendEl = document.getElementById('legend');
+const tbodyEl = document.getElementById('coord-tbody');
+const overlay = document.getElementById('detail-overlay');
+
+function renderSidebar(filter){
+  listEl.innerHTML = '';
+  LOCATIONS.filter(l => !filter || l.name.toLowerCase().includes(filter.toLowerCase())).forEach(loc => {
+    const li = document.createElement('li');
+    li.className = 'loc-item';
+    li.dataset.id = loc.id;
+    li.innerHTML = '<span class="ic">' + loc.icon + '</span><span>' + loc.name + '</span>';
+    li.addEventListener('click', () => openDetail(loc.id));
+    listEl.appendChild(li);
+  });
+}
+
+function renderMarkers(){
+  markersEl.innerHTML = '';
+  LOCATIONS.forEach(loc => {
+    const div = document.createElement('div');
+    div.className = 'marker';
+    div.dataset.id = loc.id;
+    div.style.left = loc.x + '%';
+    div.style.top = loc.y + '%';
+    div.innerHTML = '<div class="dot">' + loc.icon + '</div><div class="label">' + loc.name.split(' (')[0] + '</div>';
+    div.addEventListener('click', () => openDetail(loc.id));
+    markersEl.appendChild(div);
+  });
+}
+
+function renderLegend(){
+  const seen = new Set();
+  legendEl.innerHTML = '';
+  LOCATIONS.forEach(loc => {
+    if (seen.has(loc.type)) return;
+    seen.add(loc.type);
+    const div = document.createElement('div');
+    div.className = 'item';
+    div.innerHTML = '<span class="sw">' + loc.icon + '</span><span>' + (TYPE_LABELS[loc.type] || loc.type) + '</span>';
+    legendEl.appendChild(div);
+  });
+}
+
+function renderTable(){
+  tbodyEl.innerHTML = '';
+  LOCATIONS.forEach(loc => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td>' + loc.icon + ' ' + loc.name + '</td><td>' + loc.region + '</td><td>' + (TYPE_LABELS[loc.type] || loc.type) + '</td>';
+    tbodyEl.appendChild(tr);
+  });
+}
+
+function openDetail(id){
+  const loc = LOCATIONS.find(l => l.id === id);
+  if (!loc) return;
+
+  document.querySelectorAll('.loc-item').forEach(el => el.classList.toggle('active', el.dataset.id === id));
+  document.querySelectorAll('.marker').forEach(el => el.classList.toggle('active', el.dataset.id === id));
+
+  document.getElementById('detail-name').textContent = loc.name;
+  document.getElementById('detail-icon').textContent = loc.icon;
+  document.getElementById('detail-desc').textContent = loc.desc;
+  document.getElementById('detail-region').textContent = loc.region;
+  document.getElementById('detail-inhabitants').textContent = loc.inhabitants;
+  document.getElementById('detail-type').textContent = TYPE_LABELS[loc.type] || loc.type;
+
+  // Rasm mavjud bo'lsa ko'rsatamiz, bo'lmasa ikonka qoladi (xatolik bermaydi)
+  const photoEl = document.getElementById('detail-photo');
+  photoEl.classList.remove('loaded');
+  photoEl.onload = function(){ photoEl.classList.add('loaded'); };
+  photoEl.onerror = function(){ photoEl.classList.remove('loaded'); };
+  photoEl.alt = loc.name;
+  photoEl.src = loc.img;
+
+  const notableEl = document.getElementById('detail-notable');
+  notableEl.innerHTML = '';
+  loc.notable.forEach(n => {
+    const li = document.createElement('li');
+    li.textContent = n;
+    notableEl.appendChild(li);
+  });
+
+  overlay.classList.add('open');
+}
+
+document.getElementById('detail-close').addEventListener('click', () => overlay.classList.remove('open'));
+overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('open'); });
+
+document.getElementById('loc-search').addEventListener('input', (e) => renderSidebar(e.target.value));
+
+// Zoom + parallax depth (3-variant: 2D xarita + chuqurlik)
+let zoomLevel = 1;
+let paraX = 0, paraY = 0;
+const canvas = document.getElementById('map-canvas');
+const mapWrap = document.querySelector('.map-wrap');
+const layerBack = document.getElementById('layer-back');
+const layerMid = document.getElementById('layer-mid');
+const layerFront = document.getElementById('layer-front');
+
+function applyMapTransform(){
+  const rx = paraX * 4;   // rotateY
+  const ry = -paraY * 3;  // rotateX
+  canvas.style.transform =
+    'scale(' + zoomLevel + ') rotateX(' + ry + 'deg) rotateY(' + rx + 'deg)';
+  canvas.style.transformOrigin = 'center center';
+  if (layerBack) {
+    layerBack.style.transform =
+      'translate3d(' + (paraX * -18) + 'px,' + (paraY * -12) + 'px, -40px) scale(1.06)';
+  }
+  if (layerMid) {
+    layerMid.style.transform =
+      'translate3d(' + (paraX * -6) + 'px,' + (paraY * -4) + 'px, 0)';
+  }
+  if (layerFront) {
+    layerFront.style.transform =
+      'translate3d(' + (paraX * 10) + 'px,' + (paraY * 8) + 'px, 30px)';
+  }
+  // Markerlar biroz oldinga siljiydi — chuqurlik hissi
+  document.querySelectorAll('#markers-container .marker').forEach(function(m){
+    const depth = parseFloat(m.dataset.depth || '1');
+    const mx = paraX * 8 * depth;
+    const my = paraY * 6 * depth;
+    m.style.transform = 'translate(-50%,-50%) translate3d(' + mx + 'px,' + my + 'px,' + (depth * 12) + 'px)';
+  });
+}
+
+document.getElementById('zoom-in').addEventListener('click', function(){
+  zoomLevel = Math.min(zoomLevel + 0.2, 2.4);
+  applyMapTransform();
+});
+document.getElementById('zoom-out').addEventListener('click', function(){
+  zoomLevel = Math.max(zoomLevel - 0.2, 0.8);
+  applyMapTransform();
+});
+
+if (mapWrap) {
+  mapWrap.addEventListener('mousemove', function(e){
+    const r = mapWrap.getBoundingClientRect();
+    // -1 .. 1
+    paraX = ((e.clientX - r.left) / r.width - 0.5) * 2;
+    paraY = ((e.clientY - r.top) / r.height - 0.5) * 2;
+    applyMapTransform();
+  });
+  mapWrap.addEventListener('mouseleave', function(){
+    paraX = 0; paraY = 0;
+    applyMapTransform();
+  });
+  // Touch: barmoq bilan ham biroz parallax
+  mapWrap.addEventListener('touchmove', function(e){
+    if (!e.touches || !e.touches[0]) return;
+    const t = e.touches[0];
+    const r = mapWrap.getBoundingClientRect();
+    paraX = ((t.clientX - r.left) / r.width - 0.5) * 2;
+    paraY = ((t.clientY - r.top) / r.height - 0.5) * 2;
+    applyMapTransform();
+  }, {passive:true});
+}
+
+// Orqa qatlam: yumshoq gradient "tog'" silueti
+if (layerBack) {
+  layerBack.innerHTML =
+    '<div style="position:absolute;inset:0;background:' +
+    'radial-gradient(ellipse at 25% 35%, rgba(60,80,50,.35), transparent 55%),' +
+    'radial-gradient(ellipse at 75% 60%, rgba(90,40,25,.28), transparent 50%),' +
+    'radial-gradient(ellipse at 50% 90%, rgba(20,25,15,.4), transparent 40%);"></div>';
+}
+
+renderSidebar();
+renderMarkers();
+// Har bir markerga tasodifiy emas, y pozitsiyasiga bog'liq depth (janub biroz oldinda)
+document.querySelectorAll('#markers-container .marker').forEach(function(m){
+  const top = parseFloat(m.style.top) || 50;
+  m.dataset.depth = (0.6 + top / 100 * 0.8).toFixed(2);
+});
+renderLegend();
+renderTable();
+applyMapTransform();
+
+// media/map-bg.png yoki map-bg.jpg bo'lsa — SVG o'rniga rasm
+(function(){
+  const img = document.getElementById('custom-map-img');
+  img.addEventListener('load', function(){ img.classList.add('loaded'); });
+  img.addEventListener('error', function(){ img.classList.remove('loaded'); });
+  if (img.complete && img.naturalWidth > 0) img.classList.add('loaded');
+})();
+</script>
+
+</body>
+</html>

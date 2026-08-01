@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+{% block title %}Hamjamiyat — Uzuklar Hukmdori{% endblock %}
+{% block extra_style %}
+<style>
+  .community-hero {
+    text-align: center;
+    padding: 48px 6vw 28px;
+    background: radial-gradient(ellipse at 50% 0%, rgba(201,163,78,.12), transparent 60%);
+  }
+  .community-hero h1 {
+    font-family: 'Cinzel Decorative', Cinzel, serif;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    color: var(--gold);
+    letter-spacing: .08em;
+    margin: 0 0 8px;
+  }
+  .community-hero p {
+    color: var(--ink-dim);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.25rem;
+    margin: 0;
+  }
+  .stats-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+    padding: 0 6vw 32px;
+  }
+  .stat-card {
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 16px 28px;
+    text-align: center;
+    min-width: 120px;
+  }
+  .stat-card .num {
+    font-family: 'Cinzel', serif;
+    font-size: 1.8rem;
+    color: var(--gold);
+    font-weight: 700;
+  }
+  .stat-card .lbl {
+    font-size: .75rem;
+    color: var(--ink-dim);
+    letter-spacing: .06em;
+    text-transform: uppercase;
+  }
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 0 6vw 24px;
+    justify-content: center;
+    align-items: center;
+  }
+  .filters select, .filters input {
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+  }
+  .filters button {
+    background: var(--gold);
+    color: #141810;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 6px;
+    font-family: 'Cinzel', serif;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .filters button:hover { background: var(--gold-light); }
+  .members-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 18px;
+    padding: 0 6vw 60px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .member-card {
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 20px 16px;
+    text-align: center;
+    transition: transform .25s, box-shadow .25s, border-color .25s;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+  .member-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 36px rgba(201,163,78,.25);
+    border-color: var(--gold);
+  }
+  .member-avatar {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    border: 2px solid var(--gold);
+    object-fit: cover;
+    margin: 0 auto 12px;
+    display: block;
+    background: #1a1e14;
+  }
+  .member-avatar.placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    color: var(--gold);
+  }
+  .member-name {
+    font-family: 'Cinzel', serif;
+    color: var(--gold-light);
+    font-size: 1.05rem;
+    margin: 0 0 4px;
+  }
+  .member-meta {
+    color: var(--ink-dim);
+    font-size: .85rem;
+    margin: 2px 0;
+  }
+  .rep-badge {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 2px 10px;
+    border-radius: 12px;
+    background: rgba(201,163,78,.15);
+    border: 1px solid var(--line);
+    color: var(--gold);
+    font-size: .8rem;
+    font-family: 'Cinzel', serif;
+  }
+  .pagination {
+    text-align: center;
+    padding-bottom: 48px;
+  }
+  .pagination a, .pagination span {
+    display: inline-block;
+    margin: 0 4px;
+    padding: 6px 12px;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    color: var(--ink);
+    text-decoration: none;
+    font-family: 'Cinzel', serif;
+    font-size: .85rem;
+  }
+  .pagination a:hover { border-color: var(--gold); color: var(--gold); }
+  .pagination .current { background: var(--gold); color: #141810; border-color: var(--gold); }
+</style>
+{% endblock %}
+{% block content %}
+<div class="community-hero">
+  <h1>⚔ Hamjamiyat</h1>
+  <p>O‘rta Yer muxlislari birlashuvi — a’zolar, fraksiyalar va obro‘</p>
+</div>
+
+<div class="stats-row">
+  <div class="stat-card"><div class="num">{{ stats.members }}</div><div class="lbl">A’zolar</div></div>
+  <div class="stat-card"><div class="num">{{ stats.topics }}</div><div class="lbl">Mavzular</div></div>
+  <div class="stat-card"><div class="num">{{ stats.posts }}</div><div class="lbl">Javoblar</div></div>
+  <div class="stat-card"><div class="num">{{ stats.messages }}</div><div class="lbl">Chat xabarlar</div></div>
+</div>
+
+<form class="filters" method="get">
+  <input type="text" name="q" value="{{ q }}" placeholder="Ism bo‘yicha qidirish...">
+  <select name="race">
+    <option value="">Barcha irqlar</option>
+    {% for val, label in race_choices %}
+    <option value="{{ val }}" {% if race_filter == val %}selected{% endif %}>{{ label }}</option>
+    {% endfor %}
+  </select>
+  <select name="faction">
+    <option value="">Barcha fraksiyalar</option>
+    {% for val, label in faction_choices %}
+    <option value="{{ val }}" {% if faction_filter == val %}selected{% endif %}>{{ label }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit">Qidirish</button>
+</form>
+
+<div class="members-grid">
+  {% for m in members %}
+  <a class="member-card" href="{% url 'member_profile' m.user.username %}">
+    {% if m.avatar %}
+    <img class="member-avatar" src="{{ m.avatar.url }}" alt="{{ m.user.username }}">
+    {% else %}
+    <div class="member-avatar placeholder">⚔</div>
+    {% endif %}
+    <div class="member-name">{{ m.user.username }}</div>
+    <div class="member-meta">{{ m.display_race }} · {{ m.display_faction }}</div>
+    {% if m.bio %}<div class="member-meta">{{ m.bio|truncatechars:50 }}</div>{% endif %}
+    <span class="rep-badge">✦ {{ m.reputation }} obro‘</span>
+  </a>
+  {% empty %}
+  <p style="grid-column:1/-1;text-align:center;color:var(--ink-dim);padding:40px;">
+    Hali a’zolar topilmadi. Birinchi bo‘lib <a href="{% url 'register' %}" style="color:var(--gold);">ro‘yxatdan o‘ting</a>!
+  </p>
+  {% endfor %}
+</div>
+
+{% if members.has_other_pages %}
+<div class="pagination">
+  {% if members.has_previous %}
+  <a href="?page={{ members.previous_page_number }}&q={{ q }}&race={{ race_filter }}&faction={{ faction_filter }}">←</a>
+  {% endif %}
+  <span class="current">{{ members.number }} / {{ members.paginator.num_pages }}</span>
+  {% if members.has_next %}
+  <a href="?page={{ members.next_page_number }}&q={{ q }}&race={{ race_filter }}&faction={{ faction_filter }}">→</a>
+  {% endif %}
+</div>
+{% endif %}
+{% endblock %}

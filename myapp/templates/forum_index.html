@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block title %}Forum — Uzuklar Hukmdori{% endblock %}
+{% block extra_style %}
+<style>
+  .forum-wrap { max-width: 960px; margin: 0 auto; padding: 40px 6vw 60px; }
+  .forum-wrap h1 {
+    font-family: 'Cinzel Decorative', Cinzel, serif;
+    color: var(--gold);
+    font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+    letter-spacing: .06em;
+    margin: 0 0 6px;
+  }
+  .forum-wrap .sub {
+    color: var(--ink-dim);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.15rem;
+    margin-bottom: 28px;
+  }
+  .cat-list { display: flex; flex-direction: column; gap: 14px; margin-bottom: 40px; }
+  .cat-card {
+    display: flex; align-items: center; gap: 18px;
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 18px 22px;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color .2s, box-shadow .2s, transform .2s;
+  }
+  .cat-card:hover {
+    border-color: var(--gold);
+    box-shadow: 0 8px 28px rgba(201,163,78,.2);
+    transform: translateX(4px);
+  }
+  .cat-icon { font-size: 2rem; width: 48px; text-align: center; }
+  .cat-info { flex: 1; }
+  .cat-info h2 {
+    font-family: 'Cinzel', serif;
+    color: var(--gold-light);
+    font-size: 1.15rem;
+    margin: 0 0 4px;
+  }
+  .cat-info p { margin: 0; color: var(--ink-dim); font-size: .95rem; }
+  .cat-count {
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
+    font-size: .9rem;
+    white-space: nowrap;
+  }
+  .recent h2 {
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
+    font-size: 1.2rem;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 8px;
+    margin-bottom: 14px;
+  }
+  .topic-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(201,163,78,.12);
+    gap: 12px;
+  }
+  .topic-row a {
+    color: var(--ink);
+    text-decoration: none;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+  }
+  .topic-row a:hover { color: var(--gold); }
+  .topic-meta { color: var(--ink-dim); font-size: .85rem; white-space: nowrap; }
+  .pin { color: var(--gold); margin-right: 4px; }
+</style>
+{% endblock %}
+{% block content %}
+<div class="forum-wrap">
+  <h1>📜 Forum</h1>
+  <p class="sub">O‘rta Yer haqida suhbatlar, savollar va hikoyalar</p>
+
+  <div class="cat-list">
+    {% for c in categories %}
+    <a class="cat-card" href="{% url 'forum_category' c.slug %}">
+      <div class="cat-icon">{{ c.icon }}</div>
+      <div class="cat-info">
+        <h2>{{ c.name }}</h2>
+        <p>{{ c.description|default:"Muhokama bo‘limi" }}</p>
+      </div>
+      <div class="cat-count">{{ c.topic_count }} mavzu</div>
+    </a>
+    {% empty %}
+    <p style="color:var(--ink-dim);">Hali forum bo‘limlari yaratilmagan. Admin paneldan qo‘shing.</p>
+    {% endfor %}
+  </div>
+
+  {% if recent_topics %}
+  <div class="recent">
+    <h2>So‘nggi mavzular</h2>
+    {% for t in recent_topics %}
+    <div class="topic-row">
+      <div>
+        {% if t.is_pinned %}<span class="pin">📌</span>{% endif %}
+        <a href="{% url 'topic_detail' t.pk %}">{{ t.title }}</a>
+      </div>
+      <div class="topic-meta">
+        {{ t.category.name }} · {{ t.author.username|default:"—" }} · {{ t.updated_at|date:"d.m.Y H:i" }}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

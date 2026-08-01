@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block title %}{{ topic.title }} — Forum{% endblock %}
+{% block extra_style %}
+<style>
+  .topic-wrap { max-width: 800px; margin: 0 auto; padding: 36px 6vw 60px; }
+  .breadcrumb {
+    font-size: .85rem; color: var(--ink-dim); margin-bottom: 16px;
+  }
+  .breadcrumb a { color: var(--gold); text-decoration: none; }
+  .topic-header {
+    background: var(--bg-panel); border: 1px solid var(--line);
+    border-radius: 10px; padding: 24px; margin-bottom: 24px;
+  }
+  .topic-header h1 {
+    font-family: 'Cinzel', serif; color: var(--gold-light);
+    font-size: 1.5rem; margin: 0 0 10px;
+  }
+  .topic-meta { color: var(--ink-dim); font-size: .9rem; margin-bottom: 16px; }
+  .topic-body {
+    font-family: 'Cormorant Garamond', serif; font-size: 1.15rem;
+    line-height: 1.65; color: var(--ink); white-space: pre-wrap;
+  }
+  .post {
+    background: var(--bg-panel); border: 1px solid var(--line);
+    border-radius: 8px; padding: 18px 20px; margin-bottom: 14px;
+  }
+  .post-head {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 10px; flex-wrap: wrap; gap: 8px;
+  }
+  .post-author {
+    font-family: 'Cinzel', serif; color: var(--gold); text-decoration: none; font-size: .95rem;
+  }
+  .post-author:hover { color: var(--gold-light); }
+  .post-date { color: var(--ink-dim); font-size: .8rem; }
+  .post-body {
+    font-family: 'Cormorant Garamond', serif; font-size: 1.1rem;
+    line-height: 1.6; white-space: pre-wrap;
+  }
+  .reply-box {
+    margin-top: 28px; background: var(--bg-panel);
+    border: 1px solid var(--line); border-radius: 10px; padding: 20px;
+  }
+  .reply-box h3 {
+    font-family: 'Cinzel', serif; color: var(--gold); font-size: 1rem; margin: 0 0 12px;
+  }
+  .reply-box textarea {
+    width: 100%; background: #0e120c; border: 1px solid var(--line);
+    color: var(--ink); padding: 12px; border-radius: 6px;
+    font-family: 'Cormorant Garamond', serif; font-size: 1.1rem;
+    box-sizing: border-box; min-height: 120px;
+  }
+  .reply-box textarea:focus { outline: none; border-color: var(--gold); }
+  .btn-gold {
+    background: var(--gold); color: #141810; border: none;
+    padding: 10px 22px; border-radius: 6px; margin-top: 12px;
+    font-family: 'Cinzel', serif; font-weight: 600; cursor: pointer;
+  }
+  .btn-gold:hover { background: var(--gold-light); }
+  .locked-note {
+    text-align: center; color: var(--ink-dim); padding: 20px;
+    border: 1px dashed var(--line); border-radius: 8px; margin-top: 20px;
+  }
+</style>
+{% endblock %}
+{% block content %}
+<div class="topic-wrap">
+  <div class="breadcrumb">
+    <a href="{% url 'forum_index' %}">Forum</a> /
+    <a href="{% url 'forum_category' topic.category.slug %}">{{ topic.category.name }}</a>
+  </div>
+
+  <div class="topic-header">
+    <h1>
+      {% if topic.is_pinned %}📌 {% endif %}
+      {% if topic.is_locked %}🔒 {% endif %}
+      {{ topic.title }}
+    </h1>
+    <div class="topic-meta">
+      {% if topic.author %}
+      <a href="{% url 'member_profile' topic.author.username %}" style="color:var(--gold);">{{ topic.author.username }}</a>
+      {% else %}Noma’lum{% endif %}
+      · {{ topic.created_at|date:"d.m.Y H:i" }}
+      · {{ topic.views }} ko‘rish · {{ topic.reply_count }} javob
+    </div>
+    <div class="topic-body">{{ topic.body }}</div>
+  </div>
+
+  {% for p in posts %}
+  <div class="post" id="post-{{ p.pk }}">
+    <div class="post-head">
+      {% if p.author %}
+      <a class="post-author" href="{% url 'member_profile' p.author.username %}">{{ p.author.username }}</a>
+      {% else %}
+      <span class="post-author">—</span>
+      {% endif %}
+      <span class="post-date">{{ p.created_at|date:"d.m.Y H:i" }}</span>
+    </div>
+    <div class="post-body">{{ p.body }}</div>
+  </div>
+  {% endfor %}
+
+  {% if topic.is_locked %}
+  <div class="locked-note">🔒 Bu mavzu yopilgan. Yangi javoblar qabul qilinmaydi.</div>
+  {% elif user.is_authenticated %}
+  <div class="reply-box">
+    <h3>Javob yozish</h3>
+    <form method="post">
+      {% csrf_token %}
+      {{ form.body }}
+      <button type="submit" class="btn-gold">Javob yuborish</button>
+    </form>
+  </div>
+  {% else %}
+  <div class="locked-note">
+    Javob yozish uchun <a href="{% url 'login' %}" style="color:var(--gold);">tizimga kiring</a>.
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
