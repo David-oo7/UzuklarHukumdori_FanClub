@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Yangi ticket — Support{% endblock %}
+{% block extra_style %}
+<style>
+  .sup-wrap { max-width: 640px; margin: 0 auto; padding: 40px 6vw 70px; }
+  .sup-wrap h1 {
+    font-family: 'Cinzel Decorative', Cinzel, serif;
+    color: var(--gold);
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    margin: 0 0 6px;
+  }
+  .sup-wrap .sub { color: var(--ink-dim); margin-bottom: 24px; }
+  .sup-form {
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 24px 22px;
+  }
+  .sup-form label {
+    display: block;
+    font-family: 'Cinzel', serif;
+    font-size: .85rem;
+    color: var(--gold);
+    margin: 14px 0 6px;
+    letter-spacing: .03em;
+  }
+  .sup-form input[type=text],
+  .sup-form select,
+  .sup-form textarea,
+  .sup-form input[type=file] {
+    width: 100%;
+    box-sizing: border-box;
+    background: #0e120c;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    color: var(--ink);
+    padding: 10px 12px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.05rem;
+  }
+  .sup-form textarea { min-height: 140px; resize: vertical; }
+  .sup-form .errorlist { color: #f0a0a0; list-style: none; padding: 0; margin: 4px 0 0; font-size: .9rem; }
+  .sup-actions { display: flex; gap: 12px; margin-top: 22px; flex-wrap: wrap; }
+  .sup-btn {
+    padding: 11px 22px;
+    background: linear-gradient(180deg, #b07a3c 0%, #6b4220 100%);
+    border: 2px solid #3d2810;
+    border-top-color: #c9a06a;
+    border-radius: 6px;
+    color: #f5ecd4;
+    font-family: 'Cinzel', serif;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 3px 0 #2a1a08;
+  }
+  .sup-btn:hover { filter: brightness(1.1); }
+  .sup-cancel {
+    padding: 11px 18px;
+    color: var(--ink-dim);
+    text-decoration: none;
+    font-family: 'Cinzel', serif;
+    font-size: .9rem;
+    align-self: center;
+  }
+</style>
+{% endblock %}
+{% block content %}
+<div class="sup-wrap">
+  <h1>✍️ Yangi ticket</h1>
+  <p class="sub">Muammo yoki taklifingizni yuboring — jamoa javob beradi</p>
+
+  <form class="sup-form" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% for field in form %}
+      <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+      {{ field }}
+      {% if field.errors %}<ul class="errorlist">{% for e in field.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+    {% endfor %}
+    <div class="sup-actions">
+      <button type="submit" class="sup-btn">Submit</button>
+      <a class="sup-cancel" href="{% url 'support_center' %}">Bekor</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

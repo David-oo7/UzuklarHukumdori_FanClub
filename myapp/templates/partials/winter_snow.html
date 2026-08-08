@@ -1,0 +1,36 @@
+{% if winter_active and winter_snow_effect %}
+<div id="winter-snow" aria-hidden="true" data-intensity="{{ winter_snow_intensity }}"></div>
+<script>
+(function () {
+  const field = document.getElementById('winter-snow');
+  if (!field) return;
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  const intensity = field.dataset.intensity || 'normal';
+  const countByIntensity = { light: 28, normal: 55, heavy: 90 };
+  const flakeCount = countByIntensity[intensity] || 55;
+  const glyphs = ['❄', '❅', '❆', '•'];
+
+  const frag = document.createDocumentFragment();
+  for (let i = 0; i < flakeCount; i++) {
+    const flake = document.createElement('span');
+    flake.className = 'snowflake';
+    flake.textContent = glyphs[Math.floor(Math.random() * glyphs.length)];
+
+    const size = 8 + Math.random() * 16;
+    const fallDuration = 8 + Math.random() * 12;
+    const swayDuration = 3 + Math.random() * 4;
+    const delay = Math.random() * -20;
+
+    flake.style.left = Math.random() * 100 + 'vw';
+    flake.style.fontSize = size + 'px';
+    flake.style.opacity = (0.35 + Math.random() * 0.55).toFixed(2);
+    flake.style.animationDuration = fallDuration + 's, ' + swayDuration + 's';
+    flake.style.animationDelay = delay + 's, ' + (Math.random() * -swayDuration) + 's';
+
+    frag.appendChild(flake);
+  }
+  field.appendChild(frag);
+})();
+</script>
+{% endif %}

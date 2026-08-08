@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% block title %}{{ product.name }} — Do'kon{% endblock %}
+{% block extra_style %}
+<style>
+  .pd-wrap { max-width: 1000px; margin: 0 auto; padding: 40px 6vw 80px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; }
+  @media (max-width: 700px) { .pd-wrap { grid-template-columns: 1fr; } }
+  .pd-img {
+    background: var(--bg-panel); border: 1px solid var(--line); border-radius: 8px;
+    aspect-ratio: 1; display: flex; align-items: center; justify-content: center; overflow: hidden;
+  }
+  .pd-img img { width: 100%; height: 100%; object-fit: cover; }
+  .pd-img .ph { font-size: 5rem; opacity: .35; }
+  .pd-gallery { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .pd-gallery button {
+    width: 64px; height: 64px; padding: 0; border: 2px solid var(--line);
+    border-radius: 4px; overflow: hidden; cursor: pointer; background: var(--bg-panel);
+  }
+  .pd-gallery button.active, .pd-gallery button:hover { border-color: var(--gold); }
+  .pd-gallery img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .pd-info .cat { color: var(--ink-dim); font-size: .85rem; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 8px; }
+  .pd-info h1 { font-family: Cinzel, serif; color: var(--gold); font-size: clamp(1.5rem, 3vw, 2.2rem); margin: 0 0 16px; }
+  .pd-info .price { font-family: Cinzel, serif; font-size: 1.5rem; color: var(--gold-light); margin-bottom: 8px; }
+  .pd-info .old { text-decoration: line-through; color: var(--ink-dim); font-size: 1rem; margin-right: 10px; }
+  .pd-info .stock { color: var(--ink-dim); font-size: .9rem; margin-bottom: 20px; }
+  .pd-info .desc { color: var(--ink); line-height: 1.7; margin-bottom: 28px; white-space: pre-line; }
+  .pd-form { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .pd-form input[type=number] {
+    width: 70px; padding: 10px; background: var(--bg-panel); border: 1px solid var(--line);
+    color: var(--ink); border-radius: 4px; text-align: center;
+  }
+  .pd-form .btn {
+    display: inline-block; border: 1px solid var(--gold); color: var(--gold-light);
+    padding: 12px 28px; text-decoration: none; font-family: Cinzel, serif; font-size: .8rem;
+    letter-spacing: .12em; text-transform: uppercase; background: rgba(201,163,78,.08); cursor: pointer;
+  }
+  .pd-form .btn:hover { background: var(--gold); color: #141810; }
+  .back { display: inline-block; margin: 24px 6vw 0; color: var(--ink-dim); text-decoration: none; font-size: .9rem; }
+  .back:hover { color: var(--gold); }
+  .related { max-width: 1000px; margin: 0 auto; padding: 0 6vw 60px; }
+  .related h2 { font-family: Cinzel, serif; color: var(--gold); font-size: 1.3rem; margin-bottom: 20px; }
+  .related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; }
+  .related-card { background: var(--bg-panel); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; text-decoration: none; color: inherit; transition: .2s; }
+  .related-card:hover { border-color: var(--gold); transform: translateY(-4px); }
+  .related-card img { width: 100%; aspect-ratio: 1; object-fit: cover; }
+  .related-card .t { padding: 10px; font-size: .9rem; color: var(--ink); }
+  .related-card .p { padding: 0 10px 12px; color: var(--gold); font-family: Cinzel, serif; font-size: .85rem; }
+</style>
+{% endblock %}
+{% block content %}
+<a class="back" href="{% url 'shop' %}">← Do'konga qaytish</a>
+<div class="pd-wrap">
+  <div>
+    <div class="pd-img" id="pd-main-img">
+      {% if product.get_main_image_url %}
+        <img src="{{ product.get_main_image_url }}" alt="{{ product.name }}" id="pd-main-photo">
+      {% else %}
+        <span class="ph">💍</span>
+      {% endif %}
+    </div>
+    {% if product.image or product.gallery_images.exists %}
+    <div class="pd-gallery">
+      {% if product.image %}
+      <button type="button" class="active" data-src="{{ product.image.url }}" onclick="setMainImg(this)">
+        <img src="{{ product.image.url }}" alt="">
+      </button>
+      {% endif %}
+      {% for g in product.gallery_images.all %}
+      <button type="button" data-src="{{ g.image.url }}" onclick="setMainImg(this)">
+        <img src="{{ g.image.url }}" alt="{{ g.alt_text|default:product.name }}">
+      </button>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+  <div class="pd-info">
+    {% if product.category %}<div class="cat">{{ product.category.icon }} {{ product.category.name }}</div>{% endif %}
+    <h1>{{ product.name }}</h1>
+    <div class="price">
+      {% if product.has_discount %}<span class="old">{{ product.old_price|floatformat:0 }} so'm</span>{% endif %}
+      {{ product.price|floatformat:0 }} so'm
+    </div>
+    <div class="stock">
+      {% if product.in_stock %}Omborda: {{ product.stock }} ta{% else %}Tugagan{% endif %}
+    </div>
+    {% if product.description %}<div class="desc">{{ product.description }}</div>{% endif %}
+    {% if product.in_stock %}
+    <form class="pd-form" method="post" action="{% url 'cart_add' product.pk %}">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{% url 'product_detail' product.slug %}">
+      <label>Soni: <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}"></label>
+      <button type="submit" class="btn">Savatchaga qo'shish</button>
+    </form>
+    {% else %}
+    <p style="color:var(--ink-dim);">Hozircha sotuvda yo'q.</p>
+    {% endif %}
+    <p style="margin-top:20px;"><a href="{% url 'cart' %}" style="color:var(--gold);">Savatchani ko'rish{% if cart_count %} ({{ cart_count }}){% endif %} →</a></p>
+  </div>
+</div>
+{% if related %}
+<div class="related">
+  <h2>O'xshash mahsulotlar</h2>
+  <div class="related-grid">
+    {% for r in related %}
+    <a class="related-card" href="{% url 'product_detail' r.slug %}">
+      {% if r.get_main_image_url %}<img src="{{ r.get_main_image_url }}" alt="{{ r.name }}">{% else %}<div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:2rem;opacity:.3;">💍</div>{% endif %}
+      <div class="t">{{ r.name }}</div>
+      <div class="p">{{ r.price|floatformat:0 }} so'm</div>
+    </a>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+<script>
+function setMainImg(btn) {
+  var src = btn.getAttribute('data-src');
+  var main = document.getElementById('pd-main-photo');
+  if (main) {
+    main.src = src;
+  } else {
+    var wrap = document.getElementById('pd-main-img');
+    wrap.innerHTML = '<img src="' + src + '" alt="" id="pd-main-photo">';
+  }
+  document.querySelectorAll('.pd-gallery button').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+}
+</script>
+{% endblock %}

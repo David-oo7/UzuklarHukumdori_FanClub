@@ -1,0 +1,748 @@
+{% extends "base.html" %}
+{% block extra_style %}
+<style>
+  /* Landing page animations */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  @keyframes glow {
+    0%, 100% {
+      box-shadow: 0 0 30px rgba(201,163,78,.5), inset 0 0 12px rgba(201,163,78,.4);
+    }
+    50% {
+      box-shadow: 0 0 50px rgba(201,163,78,.7), inset 0 0 20px rgba(201,163,78,.5);
+    }
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: -200% center;
+    }
+    100% {
+      background-position: 200% center;
+    }
+  }
+
+  .hero .ring-glyph {
+    animation: float 3s ease-in-out infinite, glow 2s ease-in-out infinite;
+  }
+
+  .hero h1 {
+    animation: fadeInUp 1s ease-out;
+  }
+
+  .hero .subtitle {
+    animation: fadeInUp 1s ease-out 0.2s both;
+  }
+
+  .hero .lead {
+    animation: fadeInUp 1s ease-out 0.4s both;
+  }
+
+  .hero .btn {
+    animation: fadeInUp 1s ease-out 0.6s both;
+  }
+
+  /* Scroll animations */
+  .fade-in-section {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+  }
+
+  .fade-in-section.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Card hover effects */
+  .char-card, .realm-card, .race-card, .vol {
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  }
+
+  .char-card:hover, .realm-card:hover, .race-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 40px rgba(201,163,78,.3);
+    border-color: var(--gold);
+  }
+
+  .vol:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(201,163,78,.25);
+    border-color: var(--gold);
+  }
+
+  /* Button improvements */
+  .btn {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(201,163,78,0.3), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .btn:hover::before {
+    left: 100%;
+  }
+
+  .btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 25px rgba(201,163,78,.4);
+  }
+
+  /* Parallax effect for hero */
+  .hero {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 50% 30%, rgba(201,163,78,.15), transparent 55%);
+    animation: pulse 4s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 0.5;
+    }
+    50% {
+      opacity: 0.8;
+    }
+  }
+
+  /* Stats improvement */
+  .stat {
+    transition: transform 0.3s ease;
+  }
+
+  .stat:hover {
+    transform: scale(1.1);
+  }
+
+  .stat b {
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Section improvements */
+  .section-title {
+    position: relative;
+    display: inline-block;
+  }
+
+  .section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+
+  /* Divider animation */
+  .divider {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--line), transparent);
+  }
+
+  /* Hero mini cards */
+  .hero-mini {
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+  }
+
+  .hero-mini:hover {
+    border-color: var(--line);
+    background: rgba(201,163,78,.05);
+  }
+
+  /* Download buttons */
+  .dl {
+    transition: all 0.3s ease;
+  }
+
+  .vol:hover .dl {
+    color: var(--gold-light);
+  }
+
+  /* Game box improvement */
+  .game-box {
+    transition: all 0.3s ease;
+  }
+
+  .game-box:hover {
+    transform: scale(1.02);
+    box-shadow: 0 12px 40px rgba(201,163,78,.35);
+  }
+
+  /* Smooth scroll */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Mobile optimizations */
+  @media (max-width: 768px) {
+    .hero h1 {
+      font-size: 2rem;
+    }
+
+    .hero .subtitle {
+      font-size: 0.8rem;
+    }
+
+    .hero .lead {
+      font-size: 1rem;
+    }
+
+    .char-card, .realm-card, .race-card {
+      transition: none;
+    }
+
+    .char-card:hover, .realm-card:hover, .race-card:hover {
+      transform: none;
+    }
+  }
+
+  /* News/Announcements section */
+  .news-section {
+    padding: 40px 6vw;
+    background: rgba(20, 16, 12, 0.6);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .news-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .news-card {
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 24px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .news-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .news-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(201,163,78,.2);
+    border-color: var(--gold);
+  }
+
+  .news-card:hover::before {
+    opacity: 1;
+  }
+
+  .news-date {
+    font-size: 0.85rem;
+    color: var(--ink-dim);
+    margin-bottom: 8px;
+    font-family: 'Cinzel', serif;
+  }
+
+  .news-title {
+    font-size: 1.2rem;
+    color: var(--gold-light);
+    margin-bottom: 12px;
+    font-family: 'Cinzel', serif;
+    font-weight: 600;
+  }
+
+  .news-content {
+    color: var(--ink);
+    line-height: 1.6;
+    font-size: 0.95rem;
+  }
+
+  .news-icon {
+    font-size: 2rem;
+    margin-bottom: 12px;
+  }
+
+  .news-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    background: rgba(201,163,78,.15);
+    border: 1px solid var(--gold);
+    border-radius: 20px;
+    font-size: 0.75rem;
+    color: var(--gold-light);
+    margin-bottom: 12px;
+    font-family: 'Cinzel', serif;
+  }
+
+  .news-empty {
+    text-align: center;
+    color: var(--ink-dim);
+    padding: 40px;
+    font-style: italic;
+  }
+
+  @media (max-width: 768px) {
+    .news-section {
+      padding: 30px 4vw;
+    }
+
+    .news-grid {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .news-card {
+      padding: 20px;
+    }
+  }
+</style>
+{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="ring-glyph"></div>
+  <h1>Uzuklar Hukmdori</h1>
+  <div class="subtitle">O'rta Yer haqidagi afsona</div>
+  <p class="lead">Kichkina hobbitning yelkasiga tushgan og'ir yuk — dunyoni qutqarish uchun bitta uzukni yo'q qilish safari haqidagi buyuk sarguzasht qissasi. Do'stlik, jasorat va umid haqida ertak.</p>
+  <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+    <a href="#about" class="btn">Sarguzashtni boshlash</a>
+    <a href="#characters" class="btn" style="background: transparent; border: 1px solid var(--gold);">Qahramonlarni tanishish</a>
+  </div>
+</section>
+
+<section id="news" class="fade-in-section news-section">
+  <div class="eyebrow">Yangiliklar</div>
+  <h2 class="section-title">So'nggi e'lonlar</h2>
+  <p class="section-desc">Sayt bo'yicha eng so'nggi yangiliklar va e'lonlar bilan tanishing.</p>
+
+  {% if announcements %}
+  <div class="news-grid">
+    {% for a in announcements %}
+    <div class="news-card">
+      <div class="news-icon">📜</div>
+      <div class="news-badge">E'lon</div>
+      <div class="news-date">{{ a.created_at|date:"d.m.Y" }}</div>
+      <div class="news-title">{{ a.title }}</div>
+      <div class="news-content">{{ a.body|linebreaksbr }}</div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="news-empty">Hozircha yangiliklar mavjud emas. Tez orada yangi e'lonlar paydo bo'ladi!</div>
+  {% endif %}
+</section>
+
+<div class="divider">⟡</div>
+
+<section id="about" class="fade-in-section">
+  <div class="eyebrow">Kirish</div>
+  <h2 class="section-title">Asar haqida</h2>
+  <p class="section-desc">Zamonaviy fantastika janrining poydevorini qo'ygan asarlardan biri.</p>
+
+  <div class="about-grid">
+    <div>
+      <p>"Uzuklar Hukmdori" — ingliz yozuvchisi va tilshunosi J. R. R. Tolkien tomonidan yaratilgan, O'rta Yer deb nomlangan xayoliy dunyoda kechadigan epik voqealar majmuasi. Asar 1950-yillarning o'rtalarida uch jild holida nashr etilgan va o'shandan beri butun dunyo bo'ylab fantastika janriga eng katta ta'sir ko'rsatgan asarlardan biri sanaladi.</p>
+      <p style="margin-top:18px;">Voqealar markazida — yovuz kuchga ega bo'lgan bitta uzukni yo'q qilish uchun xavfli yo'lga chiqqan kichik hobbitlar guruhi, ularga yordam beruvchi sehrgar, jangchilar va turli xalqlar vakillari turadi. Yo'l davomida do'stlik, sadoqat va kichik yurakning katta ishlarga qodirligi haqidagi g'oyalar tasvirlanadi.</p>
+      <div class="stat-row">
+        <div class="stat"><b>3</b><span>Jild</span></div>
+        <div class="stat"><b>1950s</b><span>Nashr yillari</span></div>
+        <div class="stat"><b>∞</b><span>Muxlislar</span></div>
+      </div>
+    </div>
+    <div class="about-card">
+      <h3>Muallif haqida qisqacha</h3>
+      <p>J. R. R. Tolkien — Oksford universitetida qadimgi ingliz tili va adabiyoti bo'yicha professor bo'lgan, tilshunoslik va qadimiy afsonalarga bo'lgan qiziqishi asosida butun bir dunyo — tarixi, tillari va xalqlari bilan — yaratgan yozuvchi. Uning ishi keyinchalik yuzlab zamonaviy fantastika asarlariga ilhom bergan.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider">⟡</div>
+
+<section id="timeline" class="fade-in-section">
+  <div class="eyebrow">Trilogiya</div>
+  <h2 class="section-title">Uch jild</h2>
+  <p class="section-desc">Asar an'anaviy ravishda uch qismga bo'lib nashr etiladi.</p>
+
+  <div class="timeline">
+    <a class="vol" href="/media/books/qism1.pdf" download>
+      <div class="num">I qism</div>
+      <h3>Uzuk Sheriklari</h3>
+      <p>Xavfli safar boshlanadi: kichik guruh Shire diyoridan yo'lga chiqib, sheriklik ahdini beradi.</p>
+      <span class="dl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg> PDF yuklab olish</span>
+    </a>
+    <a class="vol" href="/media/books/qism2.pdf" download>
+      <div class="num">II qism</div>
+      <h3>Ikki Minora</h3>
+      <p>Guruh ayrilib ketadi, har bir yo'l o'z sinovlarini keltiradi va urushning shamoli kuchayadi.</p>
+      <span class="dl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg> PDF yuklab olish</span>
+    </a>
+    <a class="vol" href="/media/books/qism3.pdf" download>
+      <div class="num">III qism</div>
+      <h3>Qirolning Qaytishi</h3>
+      <p>Buyuk jang va yakuniy safar — taqdir hal bo'ladigan so'nggi qadamlar.</p>
+      <span class="dl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg> PDF yuklab olish</span>
+    </a>
+  </div>
+</section>
+
+<div class="divider">⟡</div>
+
+<section id="characters" class="fade-in-section">
+  <div class="eyebrow">Qahramonlar</div>
+  <h2 class="section-title">Sheriklik a'zolari</h2>
+  <p class="section-desc">Turli xalqlardan bo'lgan qahramonlar bir maqsad yo'lida birlashadi.</p>
+
+  <div class="char-grid">
+    <div class="char-card">
+      <div class="char-icon">🌿</div>
+      <h3>Kichik hobbit</h3>
+      <div class="role">Frodo Baggins</div>
+      <p>Tinch diyordan chiqib, og'ir vazifani zimmasiga olgan kichkina va sodda qalbli qahramon.</p>
+    </div>
+    <div class="char-card">
+      <div class="char-icon">✦</div>
+      <h3>Kulrang sayohatchi</h3>
+      <div class="role">Gendalf</div>
+      <p>Donishmand va qudratli maslahatchi, guruhni xavf-xatarlar orasida yo'naltiruvchi ustoz.</p>
+    </div>
+    <div class="char-card">
+      <div class="char-icon">⚔</div>
+      <h3>Yashirin meros vorisi</h3>
+      <div class="role">Aragorn</div>
+      <p>Qadimiy qirollik naslidan bo'lgan Aratorn o`g`li Aragorn, o'z taqdirini hali to'liq qabul qilmagan jangchi.</p>
+    </div>
+    <div class="char-card">
+      <div class="char-icon">🏹</div>
+      <h3>O'rmon farzandi</h3>
+      <div class="role">Legolas</div>
+      <p>Otkir ko'zli va tezkor,Gimlining yaqin do`sti boshqa xalqlarga ehtiyotkorlik bilan qaraydigan elf vakili.</p>
+    </div>
+    <div class="char-card">
+      <div class="char-icon">🪓</div>
+      <h3>Tog' o'g'loni</h3>
+      <div class="role">Gimli</div>
+      <p>Kuchli va sodiq, o'z xalqining qadimiy an'analarini g'urur bilan olib yuruvchi gnom.</p>
+    </div>
+    <div class="char-card">
+      <div class="char-icon">🌾</div>
+      <h3>Sodiq bog'bon</h3>
+      <div class="role">Sem</div>
+      <p>Eng og'ir damlarda ham do'stini tark etmagan, sodiqligi bilan ajralib turgan hamroh.</p>
+    </div>
+  </div>
+</section>
+
+{% include 'partials/ad_banner.html' with ads=ads_index_middle %}
+
+<div class="divider">⟡</div>
+
+<section id="realms" class="fade-in-section">
+  <div class="eyebrow">Geografiya</div>
+  <h2 class="section-title">O'rta Yer diyorlari</h2>
+  <p class="section-desc">Voqealar bir nechta xayoliy o'lka va shaharlarda kechadi.</p>
+
+  <div class="realm-grid">
+    <div class="realm-card">
+      <h3>Shire</h3>
+      <p>Yashil tepaliklar va tinch qishloqlardan iborat, hobbitlar yashaydigan osoyishta diyor.</p>
+    </div>
+    <div class="realm-card">
+      <h3>Rivendell</h3>
+      <p>Vodiyda joylashgan, elflar boshpana topgan qadimiy va donishmand shahar.</p>
+    </div>
+    <div class="realm-card">
+      <h3>Rohan</h3>
+      <p>Keng dashtlarda otliq jangchilari yashaydigan qudratli qirollik.</p>
+    </div>
+    <div class="realm-card">
+      <h3>Gondor</h3>
+      <p>Toshdan qad rostlagan buyuk qal'a-shahar, qadimiy qirollikning so'nggi tayanchi.</p>
+    </div>
+    <div class="realm-card">
+      <h3>Mordor</h3>
+      <p>Kulrang tog'lar bilan o'ralgan, xavf va zulmat hukm suradigan qorong'u yurt.</p>
+    </div>
+    <div class="realm-card">
+      <h3>Moria</h3>
+      <p>Tog' ostidagi ulkan va sirli qadimiy konlar tarmog'i.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider">⟡</div>
+
+<section id="races" class="fade-in-section">
+  <div class="eyebrow">Xalqlar</div>
+  <h2 class="section-title">O'rta Yer irqlari</h2>
+  <p class="section-desc">Har biri o'z tarixi, xarakteri va yashash tarziga ega bo'lgan turli xalqlar bu dunyoni to'ldiradi.</p>
+
+  <div class="race-grid">
+    <div class="race-card">
+      <div class="race-icon">🌿</div>
+      <h3>Hobbitlar</h3>
+      <p>Bo'yi past, oyoq kiyim kiymaydigan, tinchliksevar va o'z uylariga bog'langan kichik xalq. Shire diyorida yashashadi, sarguzashtdan ko'ra bog'dorchilik va tinch hayotni afzal ko'rishadi. Ammo kerak bo'lganda ularning yuragida kutilmagan jasorat uyg'onadi.</p>
+      <div class="hero-mini">
+        <div class="hero-avatar">🌿</div>
+        <div>
+          <div class="hero-name">Frodo Baggins</div>
+          <div class="hero-role">Uzuk tashuvchisi</div>
+          <div class="hero-bio">Tinch Shire diyoridan chiqib, Ortayerni qutqarish uchun eng og'ir yukni o'z zimmasiga olgan sodda qalbli hobbit.</div>
+        </div>
+      </div>
+    </div>
+    <div class="race-card">
+      <div class="race-icon">🏹</div>
+      <h3>Elflar</h3>
+      <p>Abadiy umr ko'ruvchi, nozik va donishmand xalq. Tabiat, san'at va bilimga chuqur bog'langan. Ko'zlari o'tkir, qadamlari sezilmas, ovozlari qo'shiqqa o'xshaydi. Ko'pchiligi asta-sekin O'rta Yerni tark etib, g'arbga — abadiy yurtga qaytmoqda.</p>
+      <div class="hero-mini">
+        <div class="hero-avatar">🏹</div>
+        <div>
+          <div class="hero-name">O'rmon Farzandi</div>
+          <div class="hero-role">Elf mergani</div>
+          <div class="hero-bio">Keskin ko'zli va tezkor, kamon otishda tengsiz, sheriklikka qo'shilgan sodiq elf jangchisi.</div>
+        </div>
+      </div>
+    </div>
+    <div class="race-card">
+      <div class="race-icon">🪓</div>
+      <h3>Gnomlar</h3>
+      <p>Tog' ostidagi konlarda yashovchi, temirchilik va tosh ishlariga usta xalq. Kuchli, qat'iyatli va o'z urug'iga sodiq. Boyliklari va qadimiy shaharlari qorong'u chuqurliklar ostida yashiringan.</p>
+      <div class="hero-mini">
+        <div class="hero-avatar">🪓</div>
+        <div>
+          <div class="hero-name">Tog' O'g'loni</div>
+          <div class="hero-role">Gimli</div>
+          <div class="hero-bio">Bolta ustasi Gloinni o`g`li va qat'iyatli hamroh, o'z xalqining qadimiy an'analarini g'urur bilan olib yuruvchi jasur gnom.</div>
+        </div>
+      </div>
+    </div>
+    <div class="race-card">
+      <div class="race-icon">⚔</div>
+      <h3>Odamlar</h3>
+      <p>Qisqa umr ko'rsalar-da, eng ko'p tarqalgan va turli-tuman xalq. Ba'zilari qudratli qirolliklar (Gondor, Rohan) qurishgan, ba'zilari esa yovuzlik ta'siriga berilib ketishgan. Kelajak ko'p jihatdan ularning qo'lida.</p>
+      <div class="hero-mini">
+        <div class="hero-avatar">⚔</div>
+        <div>
+          <div class="hero-name">Yashirin Meros Vorisi</div>
+          <div class="hero-role">Sarson jangchi</div>
+          <div class="hero-bio">Qadimiy qirollik naslidan, uzoq yillar soyada yurgan, ammo o'z taqdirini nihoyat qabul qiluvchi jangchi.</div>
+        </div>
+      </div>
+    </div>
+    <div class="race-card">
+      <div class="race-icon">✦</div>
+      <h3>Sehrgarlar (Istari)</h3>
+      <p>Uzoq yurtlardan yuborilgan, insoniy qiyofada yurgan qudratli mavjudotlar. Sanoqlari kam, lekin ta'siri katta — ular xalqlarni yovuzlikka qarshi birlashtirish uchun yordam berishadi.</p>
+      <div class="hero-mini">
+        <div class="hero-avatar">✦</div>
+        <div>
+          <div class="hero-name">Kulrang Sayohatchi</div>
+          <div class="hero-role">Donishmand sehrgar</div>
+          <div class="hero-bio">Qudratli maslahatchi va ustoz, sheriklikni xavf-xatarlar orasida yo'naltiruvchi qadimiy bilim egasi.</div>
+        </div>
+      </div>
+    </div>
+    <div class="race-card">
+      <div class="race-icon">👁</div>
+      <h3>Orklar</h3>
+      <p>Zulmat kuchlari xizmatidagi shafqatsiz va vahshiy jangchilar. Qorong'u joylarda to'da bo'lib yashashadi, urush va vayronagarchilikdan boshqa maqsadlari yo'q.</p>
+      <div class="hero-mini">
+        <div class="hero-avatar">👁</div>
+        <div>
+          <div class="hero-name">Zulmat Sarkardasi</div>
+          <div class="hero-role">Ork lashkarboshisi</div>
+          <div class="hero-bio">Qorong'u qal'alarda to'da-to'da jangchilarni boshqaruvchi, shafqatsizligi bilan nom qozongan sarkarda.</div>
+        </div>
+      </div>
+    </div>
+    <div class="race-card">
+      <div class="race-icon">🌲</div>
+      <h3>Entlar</h3>
+      <p>O'rmonlarning qadimiy qo'riqchilari — daraxtga o'xshash, sekin gapiradigan, ammo juda uzoq umr ko'radigan mavjudotlar. Tabiatga zarar yetkazilganda ularning g'azabi dahshatli bo'ladi.</p>
+      <div class="hero-mini">
+        <div class="hero-avatar">🌲</div>
+        <div>
+          <div class="hero-name">Daraxtlar Cho'poni</div>
+          <div class="hero-role">Ent oqsoqoli</div>
+          <div class="hero-bio">Ming yillik o'rmonning eng qadimiy qo'riqchisi, sekin va vazmin, lekin g'azablanganda daxshatli kuchga ega.</div>
+        </div>
+      </div>
+    </div>
+    <div class="race-card">
+      <div class="race-icon">🐴</div>
+      <h3>Rohan</h3>
+      <p>Keng dashtlarda yashovchi, otliq jangda mislsiz mahoratga ega xalq. Ularning hayoti ot, sharaf va jangovar an'analar bilan chambarchas bog'liq.</p>
+      <div class="hero-mini">
+        <div class="hero-avatar">🐴</div>
+        <div>
+          <div class="hero-name">Dashtlar Malikasi</div>
+          <div class="hero-role">Otliq jangchi</div>
+          <div class="hero-bio">Qilich va otga usta, sharaf yo'lida jangga chiqishdan qo'rqmagan mard va sadoqatli qahramon.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider">⟡</div>
+
+<section id="factions" class="fade-in-section">
+  <div class="eyebrow">Fraksiyalar</div>
+  <h2 class="section-title">Xalq va qirolliklarni tanlang</h2>
+  <p class="section-desc">Har bir fraksiya haqida batafsil ma'lumot va ularning asosiy qal'asini ko'ring.</p>
+
+  <div class="race-grid">
+    <a href="{% url 'faction_detail' 'gondor' %}" class="race-card" style="text-decoration:none; display:block;">
+      <div class="race-icon">👑</div>
+      <h3>Gondor</h3>
+      <p>Odamlarning so'nggi buyuk qirolligi — toshdan qad rostlagan qudratli qal'a-shahar.</p>
+    </a>
+    <a href="{% url 'faction_detail' 'rohan' %}" class="race-card" style="text-decoration:none; display:block;">
+      <div class="race-icon">🐴</div>
+      <h3>Rohan</h3>
+      <p>Dashtlarning otliq jangchilari, sharaf va jasorat bilan yashovchi xalq.</p>
+    </a>
+    <a href="{% url 'faction_detail' 'elflar' %}" class="race-card" style="text-decoration:none; display:block;">
+      <div class="race-icon">🏹</div>
+      <h3>Elflar</h3>
+      <p>Abadiy umr ko'ruvchi, tabiat va san'atga bog'langan donishmand xalq.</p>
+    </a>
+    <a href="{% url 'faction_detail' 'izengard' %}" class="race-card" style="text-decoration:none; display:block;">
+      <div class="race-icon">🗼</div>
+      <h3>Izengard</h3>
+      <p>Sanoat va mexanizmlar minorasi — o'zgargan sadoqat diyori.</p>
+    </a>
+    <a href="{% url 'faction_detail' 'mordor' %}" class="race-card" style="text-decoration:none; display:block;">
+      <div class="race-icon">👁</div>
+      <h3>Mordor</h3>
+      <p>Zulmat va kulrang tog'lar yurti — xavf hukm suradigan qorong'u diyor.</p>
+    </a>
+    <a href="{% url 'faction_detail' 'goblinlar' %}" class="race-card" style="text-decoration:none; display:block;">
+      <div class="race-icon">⚔️</div>
+      <h3>Goblinlar</h3>
+      <p>Tog' ostidagi g'orlarda yashovchi, to'da bo'lib harakat qiluvchi vahshiy xalq.</p>
+    </a>
+  </div>
+</section>
+
+<div class="divider">⟡</div>
+
+<section id="game" class="fade-in-section">
+  <div class="eyebrow">Interaktiv</div>
+  <h2 class="section-title">O'yinni yuklab oling</h2>
+  <div class="game-box">
+    <div class="ring-glyph"></div>
+    <h3>Uzuklar Hukmdori: Sarguzasht</h3>
+    <p>The lord of the ring olamiga mansub strategik o`yin o`yinni o`rnating va mazza qilib do`stlaringiz bilan o`ynang</p>
+    <a class="btn" href="/media/games/lotr-game-setup.exe" download>O'yinni o'rnatish</a>
+  </div>
+</section>
+
+<script>
+// Scroll animations
+document.addEventListener('DOMContentLoaded', function() {
+  const observerOptions = {
+    root: null,
+    rootMargin: '0px',
+    threshold: 0.1
+  };
+
+  const observer = new IntersectionObserver(function(entries, observer) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, observerOptions);
+
+  const fadeSections = document.querySelectorAll('.fade-in-section');
+  fadeSections.forEach(function(section) {
+    observer.observe(section);
+  });
+
+  // Smooth scroll for navigation links
+  document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
+    anchor.addEventListener('click', function(e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+    });
+  });
+
+  // Add parallax effect to hero
+  window.addEventListener('scroll', function() {
+    const scrolled = window.pageYOffset;
+    const hero = document.querySelector('.hero');
+    if (hero && scrolled < window.innerHeight) {
+      hero.style.transform = 'translateY(' + (scrolled * 0.3) + 'px)';
+    }
+  });
+});
+</script>
+{% endblock %}

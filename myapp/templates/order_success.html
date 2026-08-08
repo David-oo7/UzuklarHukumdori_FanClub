@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Buyurtma qabul qilindi{% endblock %}
+{% block extra_style %}
+<style>
+  .ok-page { max-width: 560px; margin: 0 auto; padding: 60px 6vw 80px; text-align: center; }
+  .ok-page h1 { font-family: Cinzel, serif; color: var(--gold); font-size: 1.8rem; margin-bottom: 16px; }
+  .ok-page p { color: var(--ink-dim); font-size: 1.15rem; line-height: 1.6; margin-bottom: 12px; }
+  .ok-page .num { font-family: Cinzel, serif; color: var(--gold-light); font-size: 1.4rem; }
+  .ok-page a {
+    display: inline-block; margin-top: 28px; border: 1px solid var(--gold); color: var(--gold-light);
+    padding: 12px 28px; text-decoration: none; font-family: Cinzel, serif; font-size: .8rem;
+    letter-spacing: .1em; text-transform: uppercase;
+  }
+  .ok-page a:hover { background: var(--gold); color: #141810; }
+</style>
+{% endblock %}
+{% block content %}
+<div class="ok-page">
+  <h1>✓ Buyurtma qabul qilindi</h1>
+  <p>Buyurtma raqamingiz:</p>
+  <p class="num">#{{ order.pk }}</p>
+  <p>{{ order.full_name }}, tez orada {{ order.phone }} raqamiga bog'lanamiz.</p>
+  <p>Jami: <strong style="color:var(--gold);">{{ order.total|floatformat:0 }} so'm</strong></p>
+  <a href="{% url 'shop' %}">Do'konga qaytish</a>
+</div>
+{% endblock %}

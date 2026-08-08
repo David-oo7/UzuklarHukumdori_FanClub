@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+{% block title %}Support jamoa — Uzuklar Hukmdori{% endblock %}
+{% block extra_style %}
+<style>
+  .sup-wrap { max-width: 980px; margin: 0 auto; padding: 40px 6vw 70px; }
+  .sup-wrap h1 {
+    font-family: 'Cinzel Decorative', Cinzel, serif;
+    color: var(--gold);
+    font-size: clamp(1.5rem, 3.2vw, 2.2rem);
+    margin: 0 0 6px;
+  }
+  .sub { color: var(--ink-dim); margin-bottom: 28px; font-size: 1.1rem; }
+  .role-block { margin-bottom: 32px; }
+  .role-block h2 {
+    font-family: 'Cinzel', serif;
+    color: var(--gold-light);
+    font-size: 1.15rem;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 8px;
+    margin-bottom: 16px;
+  }
+  .team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 14px;
+  }
+  .member-card {
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 18px 16px;
+    text-align: center;
+    transition: border-color .2s, transform .2s;
+  }
+  .member-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-2px);
+  }
+  a.member-card {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    cursor: pointer;
+  }
+  .member-card.no-link {
+    cursor: default;
+  }
+  .avatar {
+    width: 64px; height: 64px; border-radius: 50%;
+    margin: 0 auto 10px;
+    background: #1a1510;
+    border: 2px solid var(--line);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.6rem; overflow: hidden;
+  }
+  .avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .member-card .name {
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
+    font-size: 1rem;
+    margin-bottom: 4px;
+  }
+  .member-card .title {
+    color: var(--ink-dim);
+    font-size: .9rem;
+    margin-bottom: 6px;
+  }
+  .member-card .bio {
+    color: var(--ink);
+    font-size: .92rem;
+    font-style: italic;
+  }
+  .role-badge {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-family: 'Cinzel', serif;
+    font-size: .7rem;
+    border: 1px solid var(--line);
+    color: var(--gold-light);
+  }
+  .top-links { margin-bottom: 20px; display: flex; gap: 12px; flex-wrap: wrap; }
+  .top-links a {
+    color: var(--gold); text-decoration: none;
+    font-family: 'Cinzel', serif; font-size: .85rem;
+  }
+  .empty { color: var(--ink-dim); font-style: italic; }
+</style>
+{% endblock %}
+{% block content %}
+<div class="sup-wrap">
+  <div class="top-links">
+    <a href="{% url 'support_center' %}">← Support Center</a>
+    {% if is_support_agent %}
+    <a href="{% url 'support_agent_tickets' %}">📋 Agent panel</a>
+    {% endif %}
+  </div>
+  <h1>⚔ Support jamoa</h1>
+  <p class="sub">Sayt adminlari, dasturchilar va yordam xizmati — O‘rta Yer muxlislariga xizmat qiladi</p>
+
+  {% if groups.developer %}
+  <div class="role-block">
+    <h2>🛠 Developerlar</h2>
+    <div class="team-grid">
+      {% for m in groups.developer %}
+      {% if m.link_url %}
+      <a class="member-card" href="{{ m.link_url }}" target="_blank" rel="noopener noreferrer">
+{% else %}
+      <div class="member-card no-link">
+{% endif %}
+        <div class="avatar">
+          {% if m.user.profile and m.user.profile.avatar %}<img src="{{ m.user.profile.avatar.url }}" alt="">{% else %}🛠{% endif %}
+        </div>
+        <div class="name">{{ m.user.username }}</div>
+        <div class="title">{{ m.display_title }}</div>
+        {% if m.bio %}<div class="bio">{{ m.bio }}</div>{% endif %}
+        <span class="role-badge">{{ m.get_role_display }}</span>
+{% if m.link_url %}
+      </a>
+{% else %}
+      </div>
+{% endif %}
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {% if groups.admin %}
+  <div class="role-block">
+    <h2>⚔ Site Adminlar</h2>
+    <div class="team-grid">
+      {% for m in groups.admin %}
+      {% if m.link_url %}
+      <a class="member-card" href="{{ m.link_url }}" target="_blank" rel="noopener noreferrer">
+{% else %}
+      <div class="member-card no-link">
+{% endif %}
+        <div class="avatar">
+          {% if m.user.profile and m.user.profile.avatar %}<img src="{{ m.user.profile.avatar.url }}" alt="">{% else %}⚔{% endif %}
+        </div>
+        <div class="name">{{ m.user.username }}</div>
+        <div class="title">{{ m.display_title }}</div>
+        {% if m.bio %}<div class="bio">{{ m.bio }}</div>{% endif %}
+        <span class="role-badge">{{ m.get_role_display }}</span>
+{% if m.link_url %}
+      </a>
+{% else %}
+      </div>
+{% endif %}
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {% if groups.support %}
+  <div class="role-block">
+    <h2>📜 Support</h2>
+    <div class="team-grid">
+      {% for m in groups.support %}
+      {% if m.link_url %}
+      <a class="member-card" href="{{ m.link_url }}" target="_blank" rel="noopener noreferrer">
+{% else %}
+      <div class="member-card no-link">
+{% endif %}
+        <div class="avatar">
+          {% if m.user.profile and m.user.profile.avatar %}<img src="{{ m.user.profile.avatar.url }}" alt="">{% else %}📜{% endif %}
+        </div>
+        <div class="name">{{ m.user.username }}</div>
+        <div class="title">{{ m.display_title }}</div>
+        {% if m.bio %}<div class="bio">{{ m.bio }}</div>{% endif %}
+        <span class="role-badge">{{ m.get_role_display }}</span>
+{% if m.link_url %}
+      </a>
+{% else %}
+      </div>
+{% endif %}
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {% if not members %}
+  <p class="empty">Hozircha jamoa a’zolari qo‘shilmagan. Admin paneldan qo‘shing.</p>
+  {% endif %}
+</div>
+{% endblock %}

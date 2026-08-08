@@ -1,0 +1,80 @@
+{% load static %}
+<audio id="uh-music" src="{% static 'audio/theme.mp3' %}" loop preload="auto"></audio>
+<button id="uh-music-toggle" type="button" aria-label="Musiqani yoqish yoki o'chirish" title="Musiqa">
+  <span id="uh-music-icon">&#9835;</span>
+</button>
+
+<style>
+  #uh-music-toggle{
+    position:fixed; right:20px; bottom:20px; z-index:9999;
+    width:52px; height:52px; border-radius:50%;
+    background:var(--bg-panel, #12160f);
+    border:2px solid var(--gold, #c9a34e);
+    box-shadow:0 0 18px rgba(201,163,78,.35);
+    color:var(--gold, #c9a34e);
+    font-size:22px; line-height:1;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; transition:box-shadow .2s, opacity .2s;
+  }
+  #uh-music-toggle:hover{ box-shadow:0 0 26px rgba(201,163,78,.55); }
+  #uh-music-toggle.uh-paused{ opacity:.55; }
+  #uh-music-toggle.uh-playing #uh-music-icon{ animation: uh-pulse 1.4s ease-in-out infinite; }
+  @keyframes uh-pulse{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.18); } }
+</style>
+
+<script>
+(function(){
+  var audio = document.getElementById('uh-music');
+  var btn = document.getElementById('uh-music-toggle');
+  var icon = document.getElementById('uh-music-icon');
+  var MUTE_KEY = 'uh_music_muted';
+  var TIME_KEY = 'uh_music_time';
+
+  var savedTime = parseFloat(sessionStorage.getItem(TIME_KEY) || '0');
+  if (!isNaN(savedTime) && savedTime > 0) {
+    audio.currentTime = savedTime;
+  }
+
+  function setState(playing){
+    btn.classList.toggle('uh-playing', playing);
+    btn.classList.toggle('uh-paused', !playing);
+    icon.innerHTML = playing ? '&#9835;' : '&#9835;&#8288;';
+  }
+
+  var userMuted = localStorage.getItem(MUTE_KEY) === '1';
+
+  function attemptAutoplay(){
+    if (userMuted) { setState(false); return; }
+    audio.play().then(function(){
+      setState(true);
+    }).catch(function(){
+      setState(false);
+      document.addEventListener('click', firstInteractionPlay, { once: true });
+    });
+  }
+
+  function firstInteractionPlay(){
+    if (userMuted) return;
+    audio.play().then(function(){ setState(true); }).catch(function(){});
+  }
+
+  btn.addEventListener('click', function(){
+    if (audio.paused){
+      userMuted = false;
+      localStorage.setItem(MUTE_KEY, '0');
+      audio.play().then(function(){ setState(true); });
+    } else {
+      audio.pause();
+      userMuted = true;
+      localStorage.setItem(MUTE_KEY, '1');
+      setState(false);
+    }
+  });
+
+  window.addEventListener('beforeunload', function(){
+    try { sessionStorage.setItem(TIME_KEY, audio.currentTime); } catch(e){}
+  });
+
+  attemptAutoplay();
+})();
+</script>

@@ -1,0 +1,352 @@
+{% extends "base.html" %}
+{% block title %}Ticket #{{ ticket.ticket_number }} — Support{% endblock %}
+{% block extra_style %}
+<style>
+  .sup-wrap { max-width: 820px; margin: 0 auto; padding: 36px 6vw 70px; }
+  .sup-wrap h1 {
+    font-family: 'Cinzel Decorative', Cinzel, serif;
+    color: var(--gold);
+    font-size: clamp(1.3rem, 2.8vw, 1.9rem);
+    margin: 0 0 4px;
+  }
+  .ticket-meta {
+    color: var(--ink-dim);
+    margin-bottom: 18px;
+    font-size: .95rem;
+  }
+  .badge {
+    display: inline-block; padding: 3px 10px; border-radius: 999px;
+    font-family: 'Cinzel', serif; font-size: .72rem; border: 1px solid;
+  }
+  .badge-open { color: #6fcf97; border-color: rgba(111,207,151,.4); background: rgba(61,139,90,.15); }
+  .badge-progress { color: var(--gold-light); border-color: rgba(201,163,78,.4); background: rgba(201,163,78,.12); }
+  .badge-closed { color: #f0a0a0; border-color: rgba(181,58,58,.4); background: rgba(181,58,58,.12); }
+  .prio-high { color: #f0a0a0; }
+  .prio-medium { color: var(--gold-light); }
+  .prio-low { color: #8ab; }
+
+  .chat-box {
+    background: rgba(20,16,12,.92);
+    border: 1px solid rgba(212,175,55,.35);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,.45);
+  }
+  .chat-messages {
+    height: 420px;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .msg {
+    max-width: 82%;
+    padding: 10px 14px;
+    border-radius: 12px;
+    position: relative;
+  }
+  .msg.user {
+    align-self: flex-start;
+    background: rgba(40, 32, 24, 0.9);
+    border: 1px solid rgba(201,163,78,.2);
+  }
+  .msg.staff {
+    align-self: flex-end;
+    background: rgba(50, 42, 18, 0.95);
+    border: 1px solid rgba(201,163,78,.45);
+  }
+  .msg .who {
+    font-family: 'Cinzel', serif;
+    font-size: .78rem;
+    color: var(--gold);
+    margin-bottom: 4px;
+  }
+  .msg.staff .who { color: #e8d18a; }
+  .msg .txt {
+    white-space: pre-wrap;
+    word-break: break-word;
+    line-height: 1.45;
+  }
+  .msg .when {
+    font-size: .75rem;
+    color: #999;
+    margin-top: 6px;
+    text-align: right;
+  }
+  .msg .file-link {
+    display: inline-block;
+    margin-top: 6px;
+    color: var(--gold-light);
+    font-size: .9rem;
+  }
+  .chat-form {
+    display: flex;
+    gap: 8px;
+    padding: 12px;
+    background: rgba(15,12,8,.95);
+    border-top: 1px solid rgba(212,175,55,.25);
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .chat-form input[type=text] {
+    flex: 1;
+    min-width: 140px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(212,175,55,.4);
+    background: #1a1510;
+    color: #eee;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.05rem;
+  }
+  .chat-form button, .chat-icon-btn {
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: 1px solid rgba(212,175,55,.4);
+    background: linear-gradient(135deg, #8b6914, #d4af37);
+    color: #1a1208;
+    font-family: 'Cinzel', serif;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .chat-icon-btn {
+    width: 42px; height: 42px; padding: 0;
+    background: #1a1510; color: #eee;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .chat-status {
+    text-align: center;
+    font-size: .9rem;
+    padding: 8px;
+    margin: 0;
+  }
+  .chat-status.online { color: #6fcf97; }
+  .chat-status.offline { color: #eb5757; }
+  .staff-bar {
+    margin-bottom: 16px;
+    padding: 12px 14px;
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+  }
+  .staff-bar select {
+    background: #0e120c; color: var(--ink);
+    border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px;
+  }
+  .staff-bar button {
+    padding: 7px 14px;
+    background: linear-gradient(180deg, #b07a3c, #6b4220);
+    border: 1px solid #3d2810; border-radius: 6px;
+    color: #f5ecd4; font-family: 'Cinzel', serif; cursor: pointer;
+  }
+  .back-link { color: var(--ink-dim); text-decoration: none; font-size: .9rem; }
+  .back-link:hover { color: var(--gold); }
+  .desc-box {
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 18px;
+    white-space: pre-wrap;
+  }
+</style>
+{% endblock %}
+{% block content %}
+<div class="sup-wrap">
+  <p><a class="back-link" href="{% url 'support_my_tickets' %}">← Mening ticketlarim</a></p>
+  <h1>Ticket #{{ ticket.ticket_number }}</h1>
+  <p class="ticket-meta">
+    <strong>{{ ticket.subject }}</strong><br>
+    {{ ticket.get_category_display }} ·
+    <span class="prio-{{ ticket.priority }}">{{ ticket.get_priority_display }}</span> ·
+    {% if ticket.status == 'open' %}
+      <span class="badge badge-open">🟢 Open</span>
+    {% elif ticket.status == 'in_progress' %}
+      <span class="badge badge-progress">🟡 In Progress</span>
+    {% else %}
+      <span class="badge badge-closed">🔴 Closed</span>
+    {% endif %}
+    · {{ ticket.created_at|date:"d.m.Y H:i" }}
+  </p>
+
+  {% if is_support_agent %}
+  <form class="staff-bar" method="post">
+    {% csrf_token %}
+    <span style="font-family:'Cinzel',serif;color:var(--gold);font-size:.85rem;">Admin:</span>
+    <select name="status">
+      {% for val, label in status_choices %}
+      <option value="{{ val }}" {% if ticket.status == val %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit">Holatni saqlash</button>
+  </form>
+  {% endif %}
+
+  <div class="desc-box">{{ ticket.description }}</div>
+  {% if ticket.attachment %}
+  <p style="margin-top:-8px;margin-bottom:18px;">
+    <a href="{{ ticket.attachment.url }}" target="_blank" rel="noopener">📎 Ilova fayl</a>
+  </p>
+  {% endif %}
+
+  <div class="chat-box">
+    <div class="chat-messages" id="chat-messages">
+      {% for m in ticket_messages %}
+      <div class="msg {% if m.is_staff_reply %}staff{% else %}user{% endif %}">
+        <div class="who">{% if m.is_staff_reply %}⚔ {% endif %}{{ m.author.username|default:"—" }}</div>
+        {% if m.body %}<div class="txt">{{ m.body }}</div>{% endif %}
+        {% if m.attachment %}
+        <a class="file-link" href="{{ m.attachment.url }}" target="_blank" rel="noopener">📎 Fayl</a>
+        {% endif %}
+        <div class="when">{{ m.created_at|date:"d.m.Y H:i" }}</div>
+      </div>
+      {% empty %}
+      <div class="msg user" id="chat-empty" style="align-self:center;opacity:.6;">Hali xabar yo‘q</div>
+      {% endfor %}
+    </div>
+
+    {% if ticket.status != 'closed' or is_support_agent %}
+    <form class="chat-form" id="chat-form">
+      {% csrf_token %}
+      <button type="button" class="chat-icon-btn" id="file-btn" title="Fayl">📎</button>
+      <input type="file" id="file-input" hidden
+             accept=".png,.jpg,.jpeg,.webp,.gif,.pdf,.zip,.txt,.log,image/*,application/pdf,application/zip,text/plain">
+      <input type="text" id="chat-text" placeholder="Xabaringiz..." maxlength="3000" autocomplete="off">
+      <button type="submit">Yuborish</button>
+    </form>
+    {% else %}
+    <p class="chat-status offline">🔒 Ticket yopilgan</p>
+    {% endif %}
+  </div>
+  <p class="chat-status offline" id="chat-status">Ulanmoqda...</p>
+</div>
+{% endblock %}
+
+{% block extra_script %}
+<script>
+(function () {
+  const TICKET_ID = {{ ticket.pk }};
+  const CAN_CHAT = {% if ticket.status != 'closed' or is_support_agent %}true{% else %}false{% endif %};
+  const wsScheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
+  const wsUrl = wsScheme + '://' + window.location.host + '/ws/support/' + TICKET_ID + '/';
+
+  const messagesEl = document.getElementById('chat-messages');
+  const statusEl = document.getElementById('chat-status');
+  const form = document.getElementById('chat-form');
+  const textInput = document.getElementById('chat-text');
+  const fileBtn = document.getElementById('file-btn');
+  const fileInput = document.getElementById('file-input');
+
+  let socket = null;
+  let reconnectTimer = null;
+
+  function setStatus(text, online) {
+    if (!statusEl) return;
+    statusEl.textContent = text;
+    statusEl.classList.toggle('online', !!online);
+    statusEl.classList.toggle('offline', !online);
+  }
+
+  function scrollBottom() {
+    if (messagesEl) messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+
+  function renderMsg(data) {
+    const empty = document.getElementById('chat-empty');
+    if (empty) empty.remove();
+    const div = document.createElement('div');
+    div.className = 'msg ' + (data.is_staff_reply ? 'staff' : 'user');
+    let html = '<div class="who">' + (data.is_staff_reply ? '⚔ ' : '') + (data.author || '') + '</div>';
+    if (data.body) html += '<div class="txt"></div>';
+    if (data.attachment_url) {
+      html += '<a class="file-link" href="' + data.attachment_url + '" target="_blank" rel="noopener">📎 Fayl</a>';
+    }
+    html += '<div class="when">' + (data.created_at || '') + '</div>';
+    div.innerHTML = html;
+    if (data.body) div.querySelector('.txt').textContent = data.body;
+    messagesEl.appendChild(div);
+    scrollBottom();
+  }
+
+  function connect() {
+    if (!CAN_CHAT && false) return;
+    try { socket = new WebSocket(wsUrl); } catch (e) {
+      setStatus('Ulanishda xatolik', false);
+      scheduleReconnect();
+      return;
+    }
+    setStatus('Ulanmoqda...', false);
+    socket.onopen = function () { setStatus('Ulandi — jonli chat', true); };
+    socket.onclose = function (ev) {
+      if (ev.code === 4001) { setStatus('Kirish kerak', false); return; }
+      if (ev.code === 4003) { setStatus('Ruxsat yo‘q', false); return; }
+      setStatus('Aloqa uzildi — qayta...', false);
+      scheduleReconnect();
+    };
+    socket.onerror = function () { setStatus('Ulanishda xatolik', false); };
+    socket.onmessage = function (e) {
+      let data;
+      try { data = JSON.parse(e.data); } catch (err) { return; }
+      if (data.type === 'error') { alert(data.error || 'Xato'); return; }
+      if (data.type === 'status') { setStatus('Ulandi — jonli chat', true); return; }
+      if (data.type === 'ticket_message') renderMsg(data);
+    };
+  }
+
+  function scheduleReconnect() {
+    if (reconnectTimer) clearTimeout(reconnectTimer);
+    reconnectTimer = setTimeout(connect, 2500);
+  }
+
+  if (form) {
+    form.addEventListener('submit', function (ev) {
+      ev.preventDefault();
+      const text = (textInput && textInput.value.trim()) || '';
+      if (!text) return;
+      if (!socket || socket.readyState !== WebSocket.OPEN) {
+        setStatus('Aloqa yo‘q — qayta...', false);
+        scheduleReconnect();
+        return;
+      }
+      socket.send(JSON.stringify({ body: text }));
+      textInput.value = '';
+    });
+  }
+
+  if (fileBtn && fileInput) {
+    fileBtn.addEventListener('click', function () { fileInput.click(); });
+    fileInput.addEventListener('change', function () {
+      const file = fileInput.files[0];
+      if (!file) return;
+      if (file.size > 8 * 1024 * 1024) {
+        alert('Fayl 8 MB dan oshmasin');
+        fileInput.value = '';
+        return;
+      }
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('body', (textInput && textInput.value.trim()) || '');
+      fd.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+      fetch('/support/ticket/' + TICKET_ID + '/upload/', {
+        method: 'POST', body: fd, credentials: 'same-origin'
+      })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (data.error) alert(data.error);
+        if (textInput) textInput.value = '';
+      })
+      .catch(function () { alert('Fayl yuborishda xatolik'); })
+      .finally(function () { fileInput.value = ''; });
+    });
+  }
+
+  connect();
+  scrollBottom();
+  window.addEventListener('beforeunload', function () {
+    if (socket) socket.close();
+  });
+})();
+</script>
+{% endblock %}

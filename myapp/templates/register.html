@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ro'yxatdan o'tish — Uzuklar Hukmdori</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --gold:#c9a34e; --gold-light:#e8d18a; --bg-dark:#0b0d0a; --bg-panel:#12160f;
+    --ink:#e6e0cf; --ink-dim:#a89f8a; --line: rgba(201,163,78,.35);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    background:
+      linear-gradient(rgba(11,13,10,.78), rgba(11,13,10,.88)),
+      var(--page-bg-image, url('/media/page-bg.jpg')),
+      #0b0d0a;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+
+    background: radial-gradient(ellipse at top, #1a1f14 0%, var(--bg-dark) 60%);
+    color:var(--ink); font-family:'Cormorant Garamond', serif; font-size:19px;
+    min-height:100vh; display:flex; align-items:center; justify-content:center; padding:30px;
+  }
+  h1,.brand{ font-family:'Cinzel', serif; letter-spacing:.04em; }
+  .card{
+    background:var(--bg-panel); border:1px solid var(--line); padding:44px 40px;
+    max-width:420px; width:100%; text-align:center;
+  }
+  .ring-glyph{
+    width:56px;height:56px;border-radius:50%; margin:0 auto 20px;
+    border:3px solid var(--gold); box-shadow:0 0 24px rgba(201,163,78,.4);
+  }
+  h1{ color:var(--gold-light); font-size:1.6rem; margin-bottom:8px; }
+  .sub{ color:var(--ink-dim); font-size:.95rem; margin-bottom:28px; }
+  form{ text-align:left; display:flex; flex-direction:column; gap:16px; }
+  label{ font-family:'Cinzel',serif; font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; color:var(--gold); display:block; margin-bottom:6px; }
+  input,select{
+    width:100%; background:#0e120c; border:1px solid var(--line); color:var(--ink);
+    padding:10px 14px; font-family:'Cormorant Garamond',serif; font-size:1rem;
+  }
+  select{ width:100%; background:#0e120c; border:1px solid var(--line); color:var(--ink); padding:10px 14px; font-family:'Cormorant Garamond',serif; font-size:1rem; }
+  .choice-note{ color:var(--gold-light); border-left:2px solid var(--gold); padding:8px 12px; background:rgba(201,163,78,.07); font-size:.88rem; }
+  .helptext{ color:var(--ink-dim); font-size:.8rem; margin-top:4px; }
+  ul.errorlist{ list-style:none; color:#e08a7d; font-size:.85rem; margin-top:4px; }
+  .btn{
+    margin-top:8px; border:1px solid var(--gold); background:rgba(201,163,78,.08); color:var(--gold-light);
+    padding:12px; font-family:'Cinzel',serif; font-size:.8rem; letter-spacing:.14em; text-transform:uppercase;
+    cursor:pointer; transition:.2s;
+  }
+  .btn:hover{ background:var(--gold); color:#141810; }
+  .switch{ margin-top:22px; color:var(--ink-dim); font-size:.9rem; }
+  .switch a{ color:var(--gold-light); text-decoration:none; }
+  .switch a:hover{ text-decoration:underline; }
+  .back{ display:block; margin-top:18px; color:var(--ink-dim); font-size:.85rem; text-decoration:none; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="ring-glyph"></div>
+    <h1>Ro'yxatdan o'tish</h1>
+    <p class="sub">O'rta Yer sarguzashtiga qo'shiling</p>
+    <form method="post">
+      {% csrf_token %}
+      {% for field in form %}
+        <div>
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.help_text %}<div class="helptext">{{ field.help_text }}</div>{% endif %}
+          {{ field.errors }}
+        </div>
+      {% endfor %}
+      <p id="faction-note" class="choice-note">Avval irqingizni tanlang — mos fraksiyalar shu yerda chiqadi.</p>
+      <button type="submit" class="btn">Ro'yxatdan o'tish</button>
+    </form>
+    <p class="switch">Hisobingiz bormi? <a href="{% url 'login' %}">Kirish</a></p>
+    <a href="{% url 'home' %}" class="back">← Bosh sahifaga qaytish</a>
+  </div>
+</body>
+<script>
+  const raceSelect = document.getElementById('id_favorite_race');
+  const factionSelect = document.getElementById('id_faction');
+  const factionNote = document.getElementById('faction-note');
+  const allFactions = [
+    ['gondor', 'Gondor'], ['rohan', 'Rohan'], ['rivendell', 'Rivendell'],
+    ['lothlorien', 'Lothlorien'], ['woodland_realm', 'Woodland Realm'],
+    ['erebor', 'Erebor'], ['mordor', 'Mordor'], ['isengard', 'Isengard'], ['goblin', 'Goblinlar']
+  ];
+  const raceFactions = {
+    elf: ['rivendell', 'lothlorien', 'woodland_realm'],
+    human: ['gondor', 'rohan'], dwarf: ['erebor'],
+    orc: ['mordor', 'isengard', 'goblin'], uruk_hai: ['mordor', 'isengard'],
+    troll: ['mordor', 'goblin'], dragon: ['mordor'], warg: ['mordor', 'isengard', 'goblin']
+  };
+  const labels = {elf:'Elflar', human:'Odamlar', dwarf:'Gnomlar', hobbit:'Xobbitlar', ent:'Entlar', ainur:'Aynurlar', orc:'Orklar', uruk_hai:'Uruk-xaylar', troll:'Trollar', dragon:'Ajdaholar', warg:'Varglar'};
+
+  function updateFactions() {
+    const race = raceSelect.value;
+    const current = factionSelect.value;
+    const allowed = raceFactions[race] || [];
+    factionSelect.innerHTML = '';
+    const blank = new Option(allowed.length ? 'Fraksiyani tanlang (ixtiyoriy)' : 'Bu irq uchun hozircha fraksiya yo‘q', '');
+    factionSelect.add(blank);
+    allFactions.filter(([value]) => allowed.includes(value)).forEach(([value, label]) => factionSelect.add(new Option(label, value)));
+    factionSelect.disabled = !race || !allowed.length;
+    if (allowed.includes(current)) factionSelect.value = current;
+    factionNote.textContent = !race
+      ? 'Avval irqingizni tanlang — mos fraksiyalar shu yerda chiqadi.'
+      : allowed.length
+        ? labels[race] + ' uchun mos fraksiyani tanlashingiz mumkin. Bu dizayndagi rang va bezaklarni yanada aniq qiladi.'
+        : labels[race] + ' uchun hozircha alohida fraksiya belgilanmagan. Asosiy irq temasi ishlatiladi.';
+  }
+  raceSelect.addEventListener('change', updateFactions);
+  updateFactions();
+</script>
+</html>

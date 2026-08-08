@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block title %}{{ category.name }} — Forum{% endblock %}
+{% block extra_style %}
+<style>
+  .forum-wrap { max-width: 960px; margin: 0 auto; padding: 36px 6vw 60px; }
+  .forum-wrap h1 {
+    font-family: 'Cinzel Decorative', Cinzel, serif;
+    color: var(--gold);
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+    margin: 0 0 4px;
+  }
+  .forum-wrap .sub { color: var(--ink-dim); margin-bottom: 20px; }
+  .actions { margin-bottom: 22px; display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn-gold {
+    background: var(--gold); color: #141810; border: none;
+    padding: 10px 20px; border-radius: 6px;
+    font-family: 'Cinzel', serif; font-weight: 600; text-decoration: none;
+    display: inline-block; cursor: pointer;
+  }
+  .btn-gold:hover { background: var(--gold-light); }
+  .btn-outline {
+    border: 1px solid var(--line); color: var(--ink); padding: 10px 18px;
+    border-radius: 6px; text-decoration: none; font-family: 'Cinzel', serif; font-size: .9rem;
+  }
+  .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+  .topic-table { width: 100%; border-collapse: collapse; }
+  .topic-table th {
+    text-align: left; font-family: 'Cinzel', serif; color: var(--gold);
+    font-size: .8rem; letter-spacing: .05em; padding: 10px 8px;
+    border-bottom: 1px solid var(--line);
+  }
+  .topic-table td {
+    padding: 14px 8px; border-bottom: 1px solid rgba(201,163,78,.1);
+    vertical-align: middle;
+  }
+  .topic-table a { color: var(--ink); text-decoration: none; font-size: 1.05rem; }
+  .topic-table a:hover { color: var(--gold); }
+  .meta { color: var(--ink-dim); font-size: .85rem; }
+  .pin { color: var(--gold); }
+  .locked { opacity: .7; }
+  .pagination { text-align: center; margin-top: 28px; }
+  .pagination a, .pagination span {
+    display: inline-block; margin: 0 4px; padding: 6px 12px;
+    border: 1px solid var(--line); border-radius: 4px; color: var(--ink);
+    text-decoration: none; font-family: 'Cinzel', serif; font-size: .85rem;
+  }
+  .pagination .current { background: var(--gold); color: #141810; }
+</style>
+{% endblock %}
+{% block content %}
+<div class="forum-wrap">
+  <h1>{{ category.icon }} {{ category.name }}</h1>
+  <p class="sub">{{ category.description }}</p>
+
+  <div class="actions">
+    <a class="btn-outline" href="{% url 'forum_index' %}">← Forum</a>
+    {% if user.is_authenticated %}
+    <a class="btn-gold" href="{% url 'topic_create' category.slug %}">+ Yangi mavzu</a>
+    {% else %}
+    <a class="btn-gold" href="{% url 'login' %}">Kirib mavzu oching</a>
+    {% endif %}
+  </div>
+
+  <table class="topic-table">
+    <thead>
+      <tr>
+        <th>Mavzu</th>
+        <th>Muallif</th>
+        <th>Javoblar</th>
+        <th>Ko‘rish</th>
+        <th>Yangilangan</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for t in topics %}
+      <tr class="{% if t.is_locked %}locked{% endif %}">
+        <td>
+          {% if t.is_pinned %}<span class="pin">📌</span>{% endif %}
+          {% if t.is_locked %}<span class="pin">🔒</span>{% endif %}
+          <a href="{% url 'topic_detail' t.pk %}">{{ t.title }}</a>
+        </td>
+        <td class="meta">
+          {% if t.author %}
+          <a href="{% url 'member_profile' t.author.username %}" style="color:var(--ink-dim);">{{ t.author.username }}</a>
+          {% else %}—{% endif %}
+        </td>
+        <td class="meta">{{ t.reply_count }}</td>
+        <td class="meta">{{ t.views }}</td>
+        <td class="meta">{{ t.updated_at|date:"d.m.Y H:i" }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="5" style="text-align:center;color:var(--ink-dim);padding:32px;">
+        Hali mavzu yo‘q. Birinchi bo‘lib oching!
+      </td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {% if topics.has_other_pages %}
+  <div class="pagination">
+    {% if topics.has_previous %}
+    <a href="?page={{ topics.previous_page_number }}">←</a>
+    {% endif %}
+    <span class="current">{{ topics.number }} / {{ topics.paginator.num_pages }}</span>
+    {% if topics.has_next %}
+    <a href="?page={{ topics.next_page_number }}">→</a>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

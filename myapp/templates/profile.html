@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shaxsiy kabinet — Uzuklar Hukmdori</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --gold:#c9a34e; --gold-light:#e8d18a; --bg-dark:#0b0d0a; --bg-panel:#12160f;
+    --ink:#e6e0cf; --ink-dim:#a89f8a; --line: rgba(201,163,78,.35);
+  }
+  body.theme-elf { --gold:#9ec5e8; --gold-light:#c8e4f8; --bg-dark:#060c14; --bg-panel:#0a1220; --ink:#ddeeff; --ink-dim:#8aabcc; --line:rgba(158,197,232,.3); }
+  body.theme-human { --gold:#c9a34e; --gold-light:#e8d18a; --bg-dark:#0d0b08; --bg-panel:#15120a; --ink:#f0e8d0; --ink-dim:#b0a080; --line:rgba(201,163,78,.4); }
+  body.theme-dwarf { --gold:#b87333; --gold-light:#d4943f; --bg-dark:#0a0704; --bg-panel:#140e08; --ink:#e8d8c0; --ink-dim:#a08060; --line:rgba(184,115,51,.35); }
+  body.theme-hobbit { --gold:#c8aa40; --gold-light:#e0cc70; --bg-dark:#080e04; --bg-panel:#101806; --ink:#f0e8c8; --ink-dim:#a09860; --line:rgba(200,170,64,.35); }
+  body.theme-ent { --gold:#6b9e4a; --gold-light:#88c060; --bg-dark:#040a02; --bg-panel:#081004; --ink:#d0e8c0; --ink-dim:#708860; --line:rgba(107,158,74,.3); }
+  body.theme-ainur { --gold:#e2d4a5; --gold-light:#fff4c8; --bg-dark:#0a0c20; --bg-panel:#13172b; --ink:#f2efff; --ink-dim:#bbb8d3; --line:rgba(226,212,165,.35); }
+  body.theme-orc, body.theme-uruk_hai { --gold:#a5b55d; --gold-light:#c8d783; --bg-dark:#090d05; --bg-panel:#121908; --ink:#e3e8cf; --ink-dim:#9ca57a; --line:rgba(165,181,93,.32); }
+  body.theme-troll { --gold:#8f9a91; --gold-light:#bec8bd; --bg-dark:#10110e; --bg-panel:#191b16; --ink:#e0e3dc; --ink-dim:#989f94; --line:rgba(143,154,145,.3); }
+  body.theme-dragon { --gold:#d66c25; --gold-light:#ffb15e; --bg-dark:#130401; --bg-panel:#220b04; --ink:#ffdfc4; --ink-dim:#bf8b69; --line:rgba(214,108,37,.38); }
+  body.theme-warg { --gold:#9d7858; --gold-light:#d2ad83; --bg-dark:#0d0907; --bg-panel:#17100c; --ink:#eadbca; --ink-dim:#aa9580; --line:rgba(157,120,88,.32); }
+  body.theme-faction-gondor { --gold:#d6b84c; --gold-light:#fff0a2; }
+  body.theme-faction-rohan { --gold:#82b563; --gold-light:#c6e59f; }
+  body.theme-faction-rivendell { --gold:#9dcff0; --gold-light:#dcf3ff; }
+  body.theme-faction-lothlorien { --gold:#d8bf58; --gold-light:#fff0a0; }
+  body.theme-faction-woodland_realm { --gold:#6fbd8b; --gold-light:#b9f0ce; }
+  body.theme-faction-erebor { --gold:#c9833d; --gold-light:#f0bd73; }
+  body.theme-faction-mordor { --gold:#cf4426; --gold-light:#ff8261; }
+  body.theme-faction-isengard { --gold:#b5b9ad; --gold-light:#e5e7dd; }
+  body.theme-faction-goblin { --gold:#9ca75d; --gold-light:#ced587; }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    background:
+      linear-gradient(rgba(11,13,10,.78), rgba(11,13,10,.88)),
+      var(--page-bg-image, url('/media/page-bg.jpg')),
+      #0b0d0a;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+
+    background: radial-gradient(ellipse at top, #1a1f14 0%, var(--bg-dark) 60%);
+    color:var(--ink); font-family:'Cormorant Garamond', serif; font-size:19px;
+    min-height:100vh; padding:50px 20px;
+  }
+  h1,h2,.brand{ font-family:'Cinzel', serif; letter-spacing:.04em; }
+
+  .wrap{ max-width:760px; margin:0 auto; }
+
+  .back{ display:inline-block; margin-bottom:26px; color:var(--ink-dim); font-size:.9rem; text-decoration:none; }
+  .back:hover{ color:var(--gold-light); }
+
+  .profile-header{
+    display:flex; align-items:center; gap:26px; margin-bottom:40px;
+    background:var(--bg-panel); border:1px solid var(--line); padding:30px;
+  }
+  .avatar-box{
+    width:96px; height:96px; border-radius:50%; border:3px solid var(--gold);
+    display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0;
+    background:rgba(201,163,78,.08); font-size:2.2rem; color:var(--gold-light);
+  }
+  .avatar-box img{ width:100%; height:100%; object-fit:cover; }
+  .profile-header h1{ color:var(--gold-light); font-size:1.8rem; margin-bottom:6px; }
+  .profile-header .meta{ color:var(--ink-dim); font-size:.95rem; }
+  .profile-header .bio{ color:var(--ink); font-style:italic; margin-top:8px; }
+  .race-tag{
+    display:inline-block; margin-top:8px; border:1px solid var(--gold); color:var(--gold-light);
+    font-family:'Cinzel',serif; font-size:.7rem; letter-spacing:.1em; text-transform:uppercase;
+    padding:4px 12px;
+  }
+
+  .card{
+    background:var(--bg-panel); border:1px solid var(--line); padding:30px; margin-bottom:30px;
+  }
+  .card h2{ color:var(--gold-light); font-size:1.25rem; margin-bottom:20px; }
+
+  form{ display:flex; flex-direction:column; gap:18px; }
+  label{ font-family:'Cinzel',serif; font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; color:var(--gold); display:block; margin-bottom:6px; }
+  input[type=text], input[type=file], select{
+    width:100%; background:#0e120c; border:1px solid var(--line); color:var(--ink);
+    padding:10px 14px; font-family:'Cormorant Garamond',serif; font-size:1rem;
+  }
+  select{ cursor:pointer; }
+  .btn{
+    align-self:flex-start; border:1px solid rgba(70,45,18,.6); background: linear-gradient(180deg,#e7cda6 0%, #c9a34e 50%, #a67638 100%);
+    color:#2b1a10; padding:12px 28px; font-family:'Cinzel',serif; font-size:.78rem; letter-spacing:.12em; text-transform:uppercase;
+    box-shadow: inset 0 2px 0 rgba(255,255,255,.12), 0 6px 10px rgba(0,0,0,.45); border-radius:6px; text-decoration:none; display:inline-block; transition:transform .12s ease, box-shadow .12s ease;
+    cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24'><path fill='%232b1a10' d='M2 21l21-9L2 3v7l12 2-12 2v7z'/></svg>") 16 16, pointer;
+  }
+  .btn:hover{ transform:translateY(-2px); box-shadow: inset 0 3px 0 rgba(255,255,255,.18), 0 10px 18px rgba(0,0,0,.5); }
+
+  .success-msg{
+    background:rgba(139,191,123,.12); border:1px solid #8bbf7b; color:#a8d99a;
+    padding:12px 18px; margin-bottom:24px; font-size:.95rem;
+  }
+
+  .msg-list{ display:flex; flex-direction:column; gap:12px; }
+  .msg-item{ border-bottom:1px solid rgba(201,163,78,.15); padding-bottom:10px; }
+  .msg-item .when{ color:var(--ink-dim); font-size:.78rem; }
+  .msg-item .txt{ color:var(--ink); margin-top:2px; }
+  .msg-empty{ color:var(--ink-dim); font-style:italic; }
+</style>
+</head>
+<body class="{% if profile.favorite_race %}theme-{{ profile.favorite_race }}{% endif %} {% if profile.faction %}theme-faction-{{ profile.faction }}{% endif %}">
+<div class="wrap">
+  <a href="{% url 'home' %}" class="back">← Bosh sahifaga qaytish</a>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="success-msg">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <div class="profile-header">
+    <div class="avatar-box">
+      {% if profile.avatar %}
+        <img src="{{ profile.avatar.url }}" alt="Avatar">
+      {% else %}
+        🙂
+      {% endif %}
+    </div>
+    <div>
+      <h1>{{ user.username }}</h1>
+      <div class="meta">A'zo bo'lgan sana: {{ profile.joined_at|date:"d.m.Y" }}</div>
+      {% if profile.bio %}<div class="bio">"{{ profile.bio }}"</div>{% endif %}
+      {% if profile.get_favorite_race_display %}
+        <div class="race-tag">{{ profile.get_favorite_race_display }}</div>
+      {% endif %}
+      {% if profile.get_faction_display %}
+        <div class="race-tag">{{ profile.get_faction_display }}</div>
+      {% endif %}
+      <div style="margin-top:10px;">
+        <a href="{% url 'password_reset' %}" class="btn" style="background:transparent;border:1px solid var(--line);color:var(--ink-dim);padding:6px 12px;font-size:.8rem;">Parolni tiklash</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Profilni tahrirlash</h2>
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      {% for field in form %}
+        <div>
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {{ field.errors }}
+        </div>
+      {% endfor %}
+      <button type="submit" class="btn">Saqlash</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>Mening so'nggi xabarlarim</h2>
+    <div class="msg-list">
+      {% for m in my_messages %}
+        <div class="msg-item">
+          <div class="when">{{ m.created_at|date:"d.m.Y H:i" }}</div>
+          <div class="txt">
+            {% if m.message_type == 'sticker' %}{{ m.sticker }}
+            {% elif m.message_type == 'image' %}[Rasm yubordingiz]
+            {% else %}{{ m.text }}{% endif %}
+          </div>
+        </div>
+      {% empty %}
+        <p class="msg-empty">Hali "Muhokama" bo'limida xabar yozmagansiz.</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+<script>
+  const raceSelect = document.getElementById('id_favorite_race');
+  const factionSelect = document.getElementById('id_faction');
+  if (raceSelect && factionSelect) {
+    const factions = {
+      elf: ['rivendell', 'lothlorien', 'woodland_realm'], human: ['gondor', 'rohan'],
+      dwarf: ['erebor'], orc: ['mordor', 'isengard', 'goblin'],
+      uruk_hai: ['mordor', 'isengard'], troll: ['mordor', 'goblin'],
+      dragon: ['mordor'], warg: ['mordor', 'isengard', 'goblin']
+    };
+    const options = Array.from(factionSelect.options).map(option => [option.value, option.text]);
+    function filterFactions() {
+      const selected = factionSelect.value;
+      const allowed = factions[raceSelect.value] || [];
+      factionSelect.innerHTML = '';
+      factionSelect.add(new Option(allowed.length ? 'Fraksiya tanlanmagan' : 'Bu irq uchun fraksiya yo‘q', ''));
+      options.filter(([value]) => allowed.includes(value)).forEach(([value, label]) => factionSelect.add(new Option(label, value)));
+      factionSelect.disabled = !allowed.length;
+      if (allowed.includes(selected)) factionSelect.value = selected;
+    }
+    raceSelect.addEventListener('change', filterFactions);
+    filterFactions();
+  }
+</script>
+</body>
+</html>

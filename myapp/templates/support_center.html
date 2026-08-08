@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+{% block title %}Support Center — Uzuklar Hukmdori{% endblock %}
+{% block extra_style %}
+<style>
+  .sup-wrap { max-width: 960px; margin: 0 auto; padding: 40px 6vw 70px; }
+  .sup-wrap h1 {
+    font-family: 'Cinzel Decorative', Cinzel, serif;
+    color: var(--gold);
+    font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+    letter-spacing: .06em;
+    margin: 0 0 6px;
+  }
+  .sup-wrap .sub {
+    color: var(--ink-dim);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.15rem;
+    margin-bottom: 28px;
+  }
+  .sup-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin-bottom: 36px;
+  }
+  .sup-card {
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 22px 20px;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color .2s, box-shadow .2s, transform .2s;
+    display: block;
+  }
+  .sup-card:hover {
+    border-color: var(--gold);
+    box-shadow: 0 8px 28px rgba(201,163,78,.2);
+    transform: translateY(-3px);
+  }
+  .sup-card .icon { font-size: 1.8rem; margin-bottom: 8px; }
+  .sup-card h2 {
+    font-family: 'Cinzel', serif;
+    color: var(--gold-light);
+    font-size: 1.1rem;
+    margin: 0 0 6px;
+  }
+  .sup-card p { margin: 0; color: var(--ink-dim); font-size: .95rem; }
+  .ticket-list { margin-top: 10px; }
+  .ticket-row {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 12px; flex-wrap: wrap;
+    padding: 14px 16px;
+    background: var(--bg-panel);
+    border: 1px solid rgba(201,163,78,.15);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color .2s;
+  }
+  .ticket-row:hover { border-color: var(--gold); }
+  .ticket-row .num {
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
+    font-size: .9rem;
+  }
+  .ticket-row .subj {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    flex: 1;
+  }
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-family: 'Cinzel', serif;
+    font-size: .72rem;
+    letter-spacing: .04em;
+    border: 1px solid;
+  }
+  .badge-open { color: #6fcf97; border-color: rgba(111,207,151,.4); background: rgba(61,139,90,.15); }
+  .badge-progress { color: var(--gold-light); border-color: rgba(201,163,78,.4); background: rgba(201,163,78,.12); }
+  .badge-closed { color: #f0a0a0; border-color: rgba(181,58,58,.4); background: rgba(181,58,58,.12); }
+  .sup-cta {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 12px 22px;
+    background: linear-gradient(180deg, #b07a3c 0%, #6b4220 100%);
+    border: 2px solid #3d2810;
+    border-top-color: #c9a06a;
+    border-radius: 6px;
+    color: #f5ecd4 !important;
+    font-family: 'Cinzel', serif;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 3px 0 #2a1a08, 0 4px 10px rgba(0,0,0,.4);
+  }
+  .sup-cta:hover { filter: brightness(1.1); }
+  .login-hint {
+    color: var(--ink-dim);
+    font-style: italic;
+    margin-top: 12px;
+  }
+</style>
+{% endblock %}
+{% block content %}
+<div class="sup-wrap">
+  <h1>📜 Support Center</h1>
+  <p class="sub">Yordam, xatolik xabarlari va takliflar — O‘rta Yer muxlislar jamoasi uchun</p>
+
+  <div class="sup-grid">
+    {% if user.is_authenticated %}
+    <a class="sup-card" href="{% url 'support_ticket_create' %}">
+      <div class="icon">✍️</div>
+      <h2>Yangi ticket</h2>
+      <p>Muammo, taklif yoki shikoyat yuboring</p>
+    </a>
+    <a class="sup-card" href="{% url 'support_my_tickets' %}">
+      <div class="icon">📋</div>
+      <h2>Mening ticketlarim</h2>
+      <p>Barcha ochilgan so‘rovlaringiz</p>
+    </a>
+    {% else %}
+    <div class="sup-card">
+      <div class="icon">🔐</div>
+      <h2>Kirish kerak</h2>
+      <p>Ticket ochish uchun avval tizimga kiring</p>
+      <a class="sup-cta" href="{% url 'login' %}?next={% url 'support_center' %}">Kirish</a>
+    </div>
+    {% endif %}
+    <div class="sup-card">
+      <div class="icon">🧙</div>
+      <h2>Gandalf</h2>
+      <p>Tezkor savollar uchun AI yordamchi</p>
+      <a class="sup-cta" href="{% url 'gandalf_page' %}">So‘rash</a>
+    </div>
+    <a class="sup-card" href="{% url 'support_team' %}">
+      <div class="icon">⚔</div>
+      <h2>Support jamoa</h2>
+      <p>Adminlar, developerlar va support</p>
+    </a>
+    {% if is_support_agent %}
+    <a class="sup-card" href="{% url 'support_agent_tickets' %}">
+      <div class="icon">📋</div>
+      <h2>Agent panel</h2>
+      <p>Barcha ticketlarni boshqarish</p>
+    </a>
+    {% endif %}
+  </div>
+
+  {% if user.is_authenticated %}
+  <h2 style="font-family:'Cinzel',serif;color:var(--gold);font-size:1.2rem;border-bottom:1px solid var(--line);padding-bottom:8px;">
+    So‘nggi ticketlaringiz
+  </h2>
+  <div class="ticket-list">
+    {% for t in my_tickets %}
+    <a class="ticket-row" href="{% url 'support_ticket_detail' t.pk %}">
+      <span class="num">#{{ t.ticket_number }}</span>
+      <span class="subj">{{ t.subject }}</span>
+      {% if t.status == 'open' %}
+        <span class="badge badge-open">🟢 Open</span>
+      {% elif t.status == 'in_progress' %}
+        <span class="badge badge-progress">🟡 In Progress</span>
+      {% else %}
+        <span class="badge badge-closed">🔴 Closed</span>
+      {% endif %}
+    </a>
+    {% empty %}
+    <p class="login-hint">Hali ticket yo‘q. Birinchi so‘rovni oching!</p>
+    {% endfor %}
+  </div>
+  {% if my_tickets %}
+  <p style="margin-top:16px;"><a href="{% url 'support_my_tickets' %}">Barchasini ko‘rish →</a></p>
+  {% endif %}
+  {% endif %}
+</div>
+{% endblock %}

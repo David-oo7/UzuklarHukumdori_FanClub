@@ -1,0 +1,676 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | Uzuklar Hukmdori{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  /* ═══════════════════════════════════════════════════════════
+     O'RTA YER ADMIN TEMASI — yog'och, oltin, pergament
+     ═══════════════════════════════════════════════════════════ */
+  :root {
+    --lotr-bg: #0a0c08;
+    --lotr-bg-deep: #060805;
+    --lotr-panel: #141910;
+    --lotr-panel2: #1c2216;
+    --lotr-panel3: #252c1c;
+    --lotr-wood: #5c3d1e;
+    --lotr-wood-mid: #7a5228;
+    --lotr-wood-light: #9a6b35;
+    --lotr-wood-edge: #3d2810;
+    --lotr-gold: #c9a34e;
+    --lotr-gold-light: #e8d18a;
+    --lotr-gold-bright: #f0e0a8;
+    --lotr-ink: #e8e0d0;
+    --lotr-ink-dim: #a89f88;
+    --lotr-line: rgba(201, 163, 78, 0.32);
+    --lotr-line-strong: rgba(201, 163, 78, 0.55);
+    --lotr-danger: #b53a3a;
+    --lotr-ok: #5a9a6a;
+    --lotr-shadow: 0 4px 18px rgba(0, 0, 0, 0.55);
+  }
+
+  html, body {
+    background:
+      radial-gradient(ellipse at 20% 0%, rgba(40, 32, 12, 0.35) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 100%, rgba(30, 40, 20, 0.25) 0%, transparent 45%),
+      var(--lotr-bg) !important;
+    color: var(--lotr-ink) !important;
+    font-family: 'Cormorant Garamond', Georgia, serif !important;
+    font-size: 16px !important;
+  }
+
+  /* —— Typography —— */
+  h1, h2, h3, h4,
+  #branding h1,
+  .module caption,
+  .module h2,
+  .inline-group h2,
+  #changelist-filter h2,
+  #changelist-filter h3,
+  .object-tools a,
+  input[type="submit"],
+  button,
+  .button,
+  a.button {
+    font-family: 'Cinzel', 'Times New Roman', serif !important;
+  }
+
+  #branding h1 {
+    font-family: 'Cinzel Decorative', Cinzel, serif !important;
+    font-size: 1.35rem !important;
+    letter-spacing: 0.06em;
+  }
+
+  /* —— Header (yog'och paneli) —— */
+  #header {
+    background:
+      linear-gradient(180deg, rgba(201,163,78,0.12) 0%, transparent 40%),
+      linear-gradient(180deg, #2a1c0e 0%, #1a120a 55%, #120e08 100%) !important;
+    border-bottom: 2px solid var(--lotr-gold) !important;
+    box-shadow:
+      0 4px 20px rgba(0,0,0,0.6),
+      inset 0 -1px 0 rgba(232,209,138,0.25) !important;
+    color: var(--lotr-gold) !important;
+    padding: 12px 24px !important;
+  }
+  #branding h1 a:link,
+  #branding h1 a:visited {
+    color: var(--lotr-gold-light) !important;
+    text-shadow: 0 0 12px rgba(201,163,78,0.35), 0 2px 4px rgba(0,0,0,0.5);
+    text-decoration: none !important;
+  }
+  #branding h1 a:hover {
+    color: var(--lotr-gold-bright) !important;
+  }
+  #user-tools {
+    font-family: 'Cormorant Garamond', serif !important;
+    font-size: 1.05rem !important;
+    color: var(--lotr-ink-dim) !important;
+  }
+  #user-tools a {
+    color: var(--lotr-gold) !important;
+    border-bottom: 1px solid transparent;
+  }
+  #user-tools a:hover {
+    color: var(--lotr-gold-bright) !important;
+    border-bottom-color: var(--lotr-gold);
+  }
+
+  /* —— Breadcrumbs —— */
+  div.breadcrumbs {
+    background: linear-gradient(90deg, #1a160e, #14120c 40%, #1a160e) !important;
+    color: var(--lotr-ink-dim) !important;
+    border-bottom: 1px solid var(--lotr-line) !important;
+    font-family: 'Cormorant Garamond', serif !important;
+    font-size: 1rem !important;
+    padding: 10px 20px !important;
+  }
+  div.breadcrumbs a {
+    color: var(--lotr-gold) !important;
+  }
+  div.breadcrumbs a:hover {
+    color: var(--lotr-gold-bright) !important;
+  }
+
+  /* —— Content —— */
+  #container, #main, .main, #content, .dashboard {
+    background: transparent !important;
+  }
+  #content {
+    padding: 20px 24px 40px !important;
+  }
+  #content h1 {
+    color: var(--lotr-gold-light) !important;
+    font-family: 'Cinzel Decorative', Cinzel, serif !important;
+    font-size: 1.7rem !important;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--lotr-line);
+    padding-bottom: 10px;
+    margin-bottom: 18px;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  }
+  #content h2 {
+    color: var(--lotr-gold) !important;
+  }
+
+  /* —— Modules / cards (qal'a paneli) —— */
+  .module,
+  .inline-group,
+  #changelist,
+  #changelist .results,
+  .dashboard .module,
+  fieldset.module {
+    background:
+      linear-gradient(165deg, rgba(28,34,22,0.95) 0%, rgba(18,22,14,0.98) 100%) !important;
+    border: 1px solid var(--lotr-line-strong) !important;
+    border-radius: 6px !important;
+    box-shadow:
+      var(--lotr-shadow),
+      inset 0 1px 0 rgba(232,209,138,0.08) !important;
+    color: var(--lotr-ink) !important;
+    overflow: hidden;
+  }
+  .module h2,
+  .module caption,
+  .inline-group h2,
+  fieldset.module > h2 {
+    background:
+      linear-gradient(180deg, #2a2214 0%, #1c1810 100%) !important;
+    color: var(--lotr-gold-light) !important;
+    border-bottom: 1px solid var(--lotr-line-strong) !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.04em;
+    padding: 10px 14px !important;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  }
+  .module a,
+  .module caption a {
+    color: var(--lotr-gold) !important;
+  }
+  .module a:hover {
+    color: var(--lotr-gold-bright) !important;
+  }
+
+  /* —— Tables —— */
+  #result_list,
+  .results table,
+  table {
+    background: transparent !important;
+    color: var(--lotr-ink) !important;
+  }
+  thead th,
+  #result_list thead th {
+    background: linear-gradient(180deg, #252018 0%, #1a1610 100%) !important;
+    color: var(--lotr-gold) !important;
+    border-bottom: 2px solid var(--lotr-line-strong) !important;
+    border-color: var(--lotr-line) !important;
+    font-family: 'Cinzel', serif !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.03em;
+  }
+  thead th a {
+    color: var(--lotr-gold-light) !important;
+  }
+  tbody tr,
+  #result_list tbody tr {
+    background: rgba(16, 20, 12, 0.6) !important;
+    border-bottom: 1px solid rgba(201,163,78,0.12) !important;
+  }
+  tbody tr:nth-child(even),
+  #result_list tbody tr:nth-child(even) {
+    background: rgba(28, 34, 20, 0.45) !important;
+  }
+  tbody tr:hover,
+  #result_list tbody tr:hover {
+    background: rgba(50, 42, 22, 0.55) !important;
+  }
+  td, th {
+    border-color: rgba(201,163,78,0.15) !important;
+    color: var(--lotr-ink) !important;
+  }
+  a:link, a:visited {
+    color: var(--lotr-gold) !important;
+  }
+  a:hover {
+    color: var(--lotr-gold-bright) !important;
+  }
+
+  /* ═══════════════════════════════════════════
+     YOG'OCH TUGMALAR (wooden buttons)
+     ═══════════════════════════════════════════ */
+  input[type="submit"],
+  input[type="button"],
+  button:not(.link),
+  .button,
+  a.button,
+  .submit-row input,
+  .object-tools a,
+  input.default {
+    font-family: 'Cinzel', serif !important;
+    font-weight: 600 !important;
+    font-size: 0.92rem !important;
+    letter-spacing: 0.04em !important;
+    color: #f5ecd4 !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.7) !important;
+    background:
+      linear-gradient(180deg,
+        #b07a3c 0%,
+        #8b5a2b 18%,
+        #6b4220 50%,
+        #5a3618 82%,
+        #4a2c12 100%
+      ) !important;
+    border: 2px solid #3d2810 !important;
+    border-top-color: #c9a06a !important;
+    border-left-color: #a07840 !important;
+    border-radius: 5px !important;
+    box-shadow:
+      0 3px 0 #2a1a08,
+      0 4px 10px rgba(0,0,0,0.45),
+      inset 0 1px 0 rgba(255,220,160,0.35),
+      inset 0 -2px 4px rgba(0,0,0,0.25) !important;
+    padding: 8px 18px !important;
+    cursor: pointer !important;
+    transition: filter 0.15s, transform 0.1s, box-shadow 0.15s !important;
+    text-decoration: none !important;
+    display: inline-block;
+  }
+
+  input[type="submit"]:hover,
+  input[type="button"]:hover,
+  button:not(.link):hover,
+  .button:hover,
+  a.button:hover,
+  .submit-row input:hover,
+  .object-tools a:hover,
+  input.default:hover {
+    filter: brightness(1.12) saturate(1.1) !important;
+    transform: translateY(-1px);
+    box-shadow:
+      0 4px 0 #2a1a08,
+      0 6px 14px rgba(0,0,0,0.5),
+      inset 0 1px 0 rgba(255,220,160,0.4),
+      inset 0 -2px 4px rgba(0,0,0,0.2) !important;
+    color: #fff8e8 !important;
+  }
+
+  input[type="submit"]:active,
+  input[type="button"]:active,
+  button:not(.link):active,
+  .button:active,
+  a.button:active,
+  .submit-row input:active,
+  .object-tools a:active {
+    transform: translateY(2px) !important;
+    box-shadow:
+      0 1px 0 #2a1a08,
+      0 2px 4px rgba(0,0,0,0.4),
+      inset 0 2px 4px rgba(0,0,0,0.35) !important;
+    filter: brightness(0.95) !important;
+  }
+
+  /* Asosiy (default) tugma — yorqinroq oltin-yog'och */
+  input.default,
+  .submit-row input.default,
+  input[type="submit"].default {
+    background:
+      linear-gradient(180deg,
+        #d4a84a 0%,
+        #b8862e 20%,
+        #9a6b20 55%,
+        #7a5218 100%
+      ) !important;
+    border-color: #5a3a10 !important;
+    border-top-color: #f0d080 !important;
+    color: #1a1208 !important;
+    text-shadow: 0 1px 0 rgba(255,230,180,0.4) !important;
+    font-weight: 700 !important;
+  }
+  input.default:hover,
+  .submit-row input.default:hover {
+    color: #0d0a04 !important;
+  }
+
+  /* Object tools (Yuqori o'ngdagi "Qo'shish" va h.k.) */
+  .object-tools {
+    margin-bottom: 12px !important;
+  }
+  .object-tools li {
+    margin-left: 8px !important;
+  }
+  .object-tools a {
+    padding: 7px 16px !important;
+    font-size: 0.88rem !important;
+  }
+  .object-tools a.addlink {
+    padding-left: 28px !important;
+  }
+
+  /* —— Form fields —— */
+  input[type="text"],
+  input[type="password"],
+  input[type="email"],
+  input[type="url"],
+  input[type="number"],
+  input[type="tel"],
+  input[type="search"],
+  input[type="date"],
+  input[type="datetime-local"],
+  input[type="time"],
+  textarea,
+  select,
+  .vTextField,
+  .vLargeTextField,
+  .vURLField,
+  .vIntegerField {
+    background: #0e120c !important;
+    border: 1px solid var(--lotr-line) !important;
+    border-radius: 4px !important;
+    color: var(--lotr-ink) !important;
+    font-family: 'Cormorant Garamond', Georgia, serif !important;
+    font-size: 1.05rem !important;
+    padding: 7px 10px !important;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.35) !important;
+  }
+  input:focus,
+  textarea:focus,
+  select:focus {
+    border-color: var(--lotr-gold) !important;
+    outline: none !important;
+    box-shadow:
+      inset 0 2px 4px rgba(0,0,0,0.35),
+      0 0 0 2px rgba(201,163,78,0.25) !important;
+  }
+  select {
+    appearance: auto;
+  }
+  label {
+    color: var(--lotr-ink-dim) !important;
+    font-family: 'Cinzel', serif !important;
+    font-size: 0.85rem !important;
+    letter-spacing: 0.03em;
+  }
+  .help, .helptext, p.help {
+    color: var(--lotr-ink-dim) !important;
+    font-style: italic;
+  }
+  .form-row {
+    border-bottom: 1px solid rgba(201,163,78,0.1) !important;
+  }
+
+  /* —— Submit row —— */
+  .submit-row {
+    background:
+      linear-gradient(180deg, #1c1810 0%, #12100c 100%) !important;
+    border: 1px solid var(--lotr-line) !important;
+    border-radius: 6px !important;
+    padding: 14px 16px !important;
+    box-shadow: inset 0 1px 0 rgba(232,209,138,0.08);
+  }
+  .submit-row a.deletelink {
+    background:
+      linear-gradient(180deg, #8b3030 0%, #5c1818 100%) !important;
+    border: 2px solid #3a1010 !important;
+    border-top-color: #c06060 !important;
+    color: #f8e0e0 !important;
+    border-radius: 5px !important;
+    padding: 8px 16px !important;
+    font-family: 'Cinzel', serif !important;
+    box-shadow: 0 3px 0 #2a0808, 0 4px 8px rgba(0,0,0,0.4) !important;
+  }
+  .submit-row a.deletelink:hover {
+    filter: brightness(1.1);
+    color: #fff !important;
+  }
+
+  /* —— Messages —— */
+  .messagelist {
+    margin: 0 0 16px !important;
+  }
+  .messagelist li {
+    border-radius: 5px !important;
+    border: 1px solid !important;
+    font-family: 'Cormorant Garamond', serif !important;
+    font-size: 1.05rem !important;
+  }
+  .messagelist .success {
+    background: #152218 !important;
+    color: #8dca9a !important;
+    border-color: rgba(90,154,106,0.4) !important;
+  }
+  .messagelist .error,
+  .errornote {
+    background: #2a1515 !important;
+    color: #f0a0a0 !important;
+    border-color: rgba(181,58,58,0.4) !important;
+  }
+  .messagelist .warning {
+    background: #2a2210 !important;
+    color: var(--lotr-gold-light) !important;
+    border-color: var(--lotr-line) !important;
+  }
+  .messagelist .info {
+    background: #15202a !important;
+    color: #9ab8d0 !important;
+    border-color: rgba(100,140,180,0.35) !important;
+  }
+
+  /* —— Filter sidebar —— */
+  #changelist-filter {
+    background: var(--lotr-panel) !important;
+    border: 1px solid var(--lotr-line) !important;
+    border-radius: 6px !important;
+    box-shadow: var(--lotr-shadow);
+  }
+  #changelist-filter h2,
+  #changelist-filter h3 {
+    background: linear-gradient(180deg, #2a2214, #1c1810) !important;
+    color: var(--lotr-gold) !important;
+    border-bottom: 1px solid var(--lotr-line) !important;
+  }
+  #changelist-filter a {
+    color: var(--lotr-ink) !important;
+  }
+  #changelist-filter li.selected a {
+    color: var(--lotr-gold-light) !important;
+    font-weight: 600;
+  }
+
+  /* —— Pagination —— */
+  .paginator {
+    background: var(--lotr-panel) !important;
+    color: var(--lotr-ink-dim) !important;
+    border-top: 1px solid var(--lotr-line) !important;
+    padding: 10px 14px !important;
+  }
+  .paginator a {
+    background:
+      linear-gradient(180deg, #7a5228 0%, #5c3d1e 100%) !important;
+    color: #f5ecd4 !important;
+    border: 1px solid #3d2810 !important;
+    border-radius: 4px !important;
+    padding: 4px 10px !important;
+    margin: 0 2px;
+    box-shadow: 0 2px 0 #2a1a08 !important;
+    text-decoration: none !important;
+  }
+  .paginator a:hover {
+    filter: brightness(1.15);
+  }
+  .paginator .this-page {
+    color: var(--lotr-gold-light) !important;
+    font-weight: 700;
+  }
+
+  /* —— Login page —— */
+  body.login {
+    background:
+      radial-gradient(ellipse at 50% 30%, rgba(80, 55, 20, 0.3) 0%, transparent 55%),
+      var(--lotr-bg-deep) !important;
+  }
+  body.login #container {
+    background:
+      linear-gradient(165deg, #1c2216 0%, #12160f 100%) !important;
+    border: 2px solid var(--lotr-line-strong) !important;
+    border-radius: 10px !important;
+    box-shadow:
+      0 12px 40px rgba(0,0,0,0.7),
+      inset 0 1px 0 rgba(232,209,138,0.12) !important;
+  }
+  body.login #header {
+    background: transparent !important;
+    border-bottom: 1px solid var(--lotr-line) !important;
+    box-shadow: none !important;
+  }
+  body.login #content {
+    padding: 24px !important;
+  }
+  body.login .submit-row {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  /* —— Related / autocomplete —— */
+  .select2-container--admin-autocomplete .select2-selection--single,
+  .select2-dropdown,
+  .select2-container--admin-autocomplete .select2-results__option {
+    background: #0e120c !important;
+    border-color: var(--lotr-line) !important;
+    color: var(--lotr-ink) !important;
+  }
+  .select2-container--admin-autocomplete .select2-results__option--highlighted {
+    background: #2a2214 !important;
+    color: var(--lotr-gold-light) !important;
+  }
+
+  /* —— Links in list —— */
+  .viewlink, .addlink, .changelink, .deletelink {
+    color: var(--lotr-gold) !important;
+  }
+
+  /* —— Footer —— */
+  #footer {
+    color: var(--lotr-ink-dim) !important;
+    border-top: 1px solid var(--lotr-line) !important;
+    background: transparent !important;
+  }
+
+  /* —— Actions bar —— */
+  .actions {
+    background: var(--lotr-panel2) !important;
+    border: 1px solid var(--lotr-line) !important;
+    border-radius: 5px !important;
+    padding: 10px 12px !important;
+  }
+  .actions select {
+    background: #0e120c !important;
+    color: var(--lotr-ink) !important;
+    border: 1px solid var(--lotr-line) !important;
+  }
+  .actions label {
+    color: var(--lotr-ink-dim) !important;
+  }
+
+  /* —— Calendar / date widgets —— */
+  .calendarbox, .clockbox {
+    background: var(--lotr-panel) !important;
+    border: 1px solid var(--lotr-line-strong) !important;
+    color: var(--lotr-ink) !important;
+    box-shadow: var(--lotr-shadow) !important;
+    border-radius: 6px !important;
+  }
+  .calendar caption, .calendarbox h2 {
+    background: #1c1810 !important;
+    color: var(--lotr-gold) !important;
+  }
+  .calendar td a:hover {
+    background: var(--lotr-wood) !important;
+  }
+
+  /* —— Checkbox / radio —— */
+  input[type="checkbox"],
+  input[type="radio"] {
+    accent-color: var(--lotr-gold);
+  }
+
+  /* —— Fieldset collapse —— */
+  fieldset.collapsed h2 {
+    background: #1c1810 !important;
+  }
+  .collapse-toggle {
+    color: var(--lotr-gold) !important;
+  }
+
+  /* —— Inline tabular —— */
+  .tabular td, .tabular th {
+    border-color: rgba(201,163,78,0.15) !important;
+  }
+  .inline-related h3 {
+    background: #1c1810 !important;
+    color: var(--lotr-gold) !important;
+    border-color: var(--lotr-line) !important;
+  }
+
+  /* —— Scrollbar —— */
+  ::-webkit-scrollbar { width: 11px; height: 11px; }
+  ::-webkit-scrollbar-track {
+    background: var(--lotr-bg-deep);
+    border-left: 1px solid rgba(201,163,78,0.1);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #6b4220, #4a2c12);
+    border-radius: 6px;
+    border: 2px solid var(--lotr-bg-deep);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #9a6b35, #6b4220);
+  }
+
+  /* —— Dashboard app list —— */
+  .dashboard .module table th {
+    background: transparent !important;
+    border: none !important;
+  }
+  .dashboard .module caption a.section {
+    color: var(--lotr-gold-light) !important;
+  }
+  .addlink, .changelink {
+    font-family: 'Cinzel', serif !important;
+    font-size: 0.85rem;
+  }
+
+  /* —— Quiet decorative top rule under header —— */
+  #header::after {
+    content: "";
+    display: block;
+    height: 3px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(201,163,78,0.15) 15%,
+      var(--lotr-gold) 50%,
+      rgba(201,163,78,0.15) 85%,
+      transparent 100%
+    );
+    margin-top: 0;
+  }
+
+  /* —— Error lists —— */
+  .errorlist {
+    background: #2a1515 !important;
+    border: 1px solid rgba(181,58,58,0.4) !important;
+    border-radius: 4px !important;
+    color: #f0a0a0 !important;
+  }
+  .errorlist li {
+    color: #f0a0a0 !important;
+  }
+
+  /* —— Selected rows —— */
+  tr.selected {
+    background: rgba(80, 60, 25, 0.45) !important;
+  }
+
+  /* —— File upload —— */
+  .file-upload a {
+    color: var(--lotr-gold) !important;
+  }
+</style>
+{% endblock %}
+
+{% block branding %}
+<h1 id="site-name">
+  <a href="{% url 'admin:index' %}">
+    ⚔ Uzuklar Hukmdori
+    <span style="font-size:.62em;opacity:.8;font-weight:400;letter-spacing:.1em;font-family:'Cinzel',serif;"> — Boshqaruv</span>
+  </a>
+</h1>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}

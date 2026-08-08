@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Buyurtma — Do'kon{% endblock %}
+{% block extra_style %}
+<style>
+  .chk-page { max-width: 700px; margin: 0 auto; padding: 40px 6vw 80px; }
+  .chk-page h1 { font-family: Cinzel, serif; color: var(--gold); font-size: 1.8rem; margin-bottom: 24px; text-align: center; }
+  .chk-summary { background: var(--bg-panel); border: 1px solid var(--line); border-radius: 6px; padding: 16px 20px; margin-bottom: 28px; }
+  .chk-summary h3 { font-family: Cinzel, serif; color: var(--gold-light); font-size: 1rem; margin: 0 0 12px; }
+  .chk-summary li { color: var(--ink); margin-bottom: 6px; list-style: none; }
+  .chk-summary .tot { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); font-family: Cinzel, serif; color: var(--gold); font-size: 1.15rem; }
+  .chk-form label { display: block; color: var(--ink-dim); font-size: .85rem; margin-bottom: 4px; margin-top: 14px; }
+  .chk-form input, .chk-form textarea {
+    width: 100%; padding: 10px 14px; background: var(--bg-panel); border: 1px solid var(--line);
+    color: var(--ink); border-radius: 4px; font-size: 1rem; box-sizing: border-box;
+  }
+  .chk-form textarea { min-height: 80px; resize: vertical; }
+  .chk-form .actions { margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap; }
+  .chk-form .btn {
+    border: 1px solid var(--gold); color: var(--gold-light); padding: 12px 28px;
+    font-family: Cinzel, serif; font-size: .8rem; letter-spacing: .1em; text-transform: uppercase;
+    background: rgba(201,163,78,.08); cursor: pointer; text-decoration: none; display: inline-block;
+  }
+  .chk-form .btn.primary { background: var(--gold); color: #141810; }
+  .chk-form .btn:hover { background: var(--gold); color: #141810; }
+</style>
+{% endblock %}
+{% block content %}
+<div class="chk-page">
+  <h1>Buyurtma berish</h1>
+  <div class="chk-summary">
+    <h3>Buyurtma tarkibi</h3>
+    <ul>
+      {% for item in items %}
+      <li>{{ item.product.name }} × {{ item.quantity }} — {{ item.subtotal|floatformat:0 }} so'm</li>
+      {% endfor %}
+    </ul>
+    <div class="tot">Jami: {{ total|floatformat:0 }} so'm</div>
+  </div>
+  <form class="chk-form" method="post">
+    {% csrf_token %}
+    <label for="full_name">Ism familiya *</label>
+    <input type="text" id="full_name" name="full_name" required value="{{ form_data.full_name|default:'' }}">
+    <label for="phone">Telefon *</label>
+    <input type="tel" id="phone" name="phone" required placeholder="+998 ..." value="{{ form_data.phone|default:'' }}">
+    <label for="address">Manzil *</label>
+    <textarea id="address" name="address" required>{{ form_data.address|default:'' }}</textarea>
+    <label for="note">Izoh (ixtiyoriy)</label>
+    <textarea id="note" name="note">{{ form_data.note|default:'' }}</textarea>
+    <div class="actions">
+      <a href="{% url 'cart' %}" class="btn">← Savatcha</a>
+      <button type="submit" class="btn primary">Buyurtmani tasdiqlash</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

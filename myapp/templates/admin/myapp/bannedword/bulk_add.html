@@ -1,0 +1,45 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">Boshqaruv</a>
+  &rsaquo; <a href="{% url 'admin:myapp_bannedword_changelist' %}">Taqiqlangan so'zlar</a>
+  &rsaquo; Ko'p so'z qo'shish
+</div>
+{% endblock %}
+
+{% block content %}
+<h1>📜 Ko'p taqiqlangan so'z qo'shish</h1>
+<p style="max-width:640px;line-height:1.5;color:#666;">
+  20–30 ta (yoki undan ko'p) so'zni bir yo'la qo'shing.
+  Har bir so'zni <strong>yangi qator</strong>ga yozing yoki <strong>vergul</strong> bilan ajrating.
+  Allaqachon mavjud so'zlar takroran qo'shilmaydi.
+</p>
+
+<form method="post" style="max-width:640px;">
+  {% csrf_token %}
+  <fieldset class="module aligned">
+    {% for field in form %}
+    <div class="form-row" style="margin-bottom:16px;">
+      <div>
+        <label for="{{ field.id_for_label }}" style="font-weight:bold;display:block;margin-bottom:6px;">
+          {{ field.label }}
+        </label>
+        {{ field }}
+        {% if field.help_text %}
+        <p class="help" style="margin-top:6px;color:#666;">{{ field.help_text }}</p>
+        {% endif %}
+        {% if field.errors %}
+        <ul class="errorlist">{% for e in field.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </fieldset>
+  <div class="submit-row" style="margin-top:16px;">
+    <input type="submit" value="Qo'shish" class="default" style="padding:10px 24px;">
+    <a href="{% url 'admin:myapp_bannedword_changelist' %}" style="margin-left:12px;">Bekor qilish</a>
+  </div>
+</form>
+{% endblock %}

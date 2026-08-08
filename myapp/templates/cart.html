@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Savatcha — Do'kon{% endblock %}
+{% block extra_style %}
+<style>
+  .cart-page { max-width: 900px; margin: 0 auto; padding: 40px 6vw 80px; }
+  .cart-page h1 { font-family: Cinzel, serif; color: var(--gold); font-size: 2rem; margin-bottom: 28px; text-align: center; }
+  .cart-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+  .cart-table th { text-align: left; color: var(--ink-dim); font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; padding: 10px 8px; border-bottom: 1px solid var(--line); }
+  .cart-table td { padding: 14px 8px; border-bottom: 1px solid var(--line); vertical-align: middle; color: var(--ink); }
+  .cart-table img { width: 56px; height: 56px; object-fit: cover; border-radius: 4px; border: 1px solid var(--line); }
+  .cart-table input[type=number] {
+    width: 60px; padding: 6px; background: var(--bg-panel); border: 1px solid var(--line);
+    color: var(--ink); text-align: center; border-radius: 4px;
+  }
+  .cart-table .rm { color: #c66; background: none; border: none; cursor: pointer; font-size: .85rem; }
+  .cart-table .rm:hover { text-decoration: underline; }
+  .cart-total { text-align: right; font-family: Cinzel, serif; font-size: 1.3rem; color: var(--gold); margin-bottom: 24px; }
+  .cart-actions { display: flex; gap: 12px; justify-content: flex-end; flex-wrap: wrap; }
+  .cart-actions a, .cart-actions button {
+    display: inline-block; border: 1px solid var(--gold); color: var(--gold-light);
+    padding: 12px 24px; text-decoration: none; font-family: Cinzel, serif; font-size: .8rem;
+    letter-spacing: .1em; text-transform: uppercase; background: rgba(201,163,78,.08); cursor: pointer;
+  }
+  .cart-actions a.primary, .cart-actions button.primary { background: var(--gold); color: #141810; }
+  .cart-actions a:hover, .cart-actions button:hover { background: var(--gold); color: #141810; }
+  .empty { text-align: center; color: var(--ink-dim); padding: 60px 20px; }
+  .empty a { color: var(--gold); }
+</style>
+{% endblock %}
+{% block content %}
+<div class="cart-page">
+  <h1>🛒 Savatcha</h1>
+  {% if items %}
+  <form method="post" action="{% url 'cart_update' %}">
+    {% csrf_token %}
+    <table class="cart-table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Mahsulot</th>
+          <th>Narx</th>
+          <th>Soni</th>
+          <th>Jami</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in items %}
+        <tr>
+          <td>
+            {% if item.product.get_main_image_url %}
+              <img src="{{ item.product.get_main_image_url }}" alt="">
+            {% else %}
+              <span style="font-size:1.5rem;">💍</span>
+            {% endif %}
+          </td>
+          <td><a href="{% url 'product_detail' item.product.slug %}" style="color:var(--ink);text-decoration:none;">{{ item.product.name }}</a></td>
+          <td>{{ item.product.price|floatformat:0 }} so'm</td>
+          <td><input type="number" name="qty_{{ item.product.pk }}" value="{{ item.quantity }}" min="0" max="{{ item.product.stock }}"></td>
+          <td>{{ item.subtotal|floatformat:0 }} so'm</td>
+          <td>
+            <button type="submit" formaction="{% url 'cart_remove' item.product.pk %}" class="rm" formmethod="post">O'chirish</button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div class="cart-total">Jami: {{ total|floatformat:0 }} so'm</div>
+    <div class="cart-actions">
+      <a href="{% url 'shop' %}">← Do'konga</a>
+      <button type="submit">Yangilash</button>
+      <a href="{% url 'checkout' %}" class="primary">Buyurtma berish</a>
+    </div>
+  </form>
+  {% else %}
+  <div class="empty">
+    <p>Savatcha bo'sh.</p>
+    <p><a href="{% url 'shop' %}">Do'konga o'tish →</a></p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

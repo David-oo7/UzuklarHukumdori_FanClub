@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}Agent — Support ticketlar{% endblock %}
+{% block extra_style %}
+<style>
+  .sup-wrap { max-width: 1000px; margin: 0 auto; padding: 40px 6vw 70px; }
+  .sup-wrap h1 {
+    font-family: 'Cinzel Decorative', Cinzel, serif;
+    color: var(--gold);
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    margin: 0 0 16px;
+  }
+  .filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+  .filters a {
+    padding: 6px 14px; border: 1px solid var(--line); border-radius: 999px;
+    text-decoration: none; color: var(--ink-dim);
+    font-family: 'Cinzel', serif; font-size: .8rem;
+  }
+  .filters a.active, .filters a:hover {
+    color: var(--gold-light); border-color: var(--gold);
+    background: rgba(201,163,78,.1);
+  }
+  table.tickets {
+    width: 100%; border-collapse: collapse;
+    background: var(--bg-panel); border: 1px solid var(--line);
+    border-radius: 8px; overflow: hidden;
+  }
+  table.tickets th {
+    font-family: 'Cinzel', serif; color: var(--gold);
+    text-align: left; padding: 10px 12px;
+    border-bottom: 1px solid var(--line);
+    background: rgba(0,0,0,.25); font-size: .85rem;
+  }
+  table.tickets td {
+    padding: 10px 12px; border-bottom: 1px solid rgba(201,163,78,.1);
+    font-size: .95rem;
+  }
+  table.tickets tr:hover td { background: rgba(201,163,78,.06); }
+  table.tickets a { color: var(--gold-light); text-decoration: none; }
+  .badge {
+    display: inline-block; padding: 2px 8px; border-radius: 999px;
+    font-family: 'Cinzel', serif; font-size: .7rem; border: 1px solid;
+  }
+  .badge-open { color: #6fcf97; border-color: rgba(111,207,151,.4); }
+  .badge-progress { color: var(--gold-light); border-color: rgba(201,163,78,.4); }
+  .badge-closed { color: #f0a0a0; border-color: rgba(181,58,58,.4); }
+  .pager { margin-top: 16px; color: var(--ink-dim); }
+  .pager a { color: var(--gold); margin: 0 6px; }
+  .top-links a { color: var(--gold); font-family: 'Cinzel', serif; font-size: .85rem; }
+</style>
+{% endblock %}
+{% block content %}
+<div class="sup-wrap">
+  <p class="top-links"><a href="{% url 'support_center' %}">← Support Center</a> · <a href="{% url 'support_team' %}">Jamoa</a></p>
+  <h1>📋 Barcha ticketlar (Agent)</h1>
+
+  <div class="filters">
+    <a href="{% url 'support_agent_tickets' %}" class="{% if not status_filter %}active{% endif %}">Barchasi</a>
+    {% for val, label in status_choices %}
+    <a href="?status={{ val }}" class="{% if status_filter == val %}active{% endif %}">{{ label }}</a>
+    {% endfor %}
+  </div>
+
+  <table class="tickets">
+    <thead>
+      <tr>
+        <th>№</th>
+        <th>Mavzu</th>
+        <th>Foydalanuvchi</th>
+        <th>Kategoriya</th>
+        <th>Holat</th>
+        <th>Yangilangan</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for t in tickets %}
+      <tr>
+        <td><a href="{% url 'support_ticket_detail' t.pk %}">#{{ t.ticket_number }}</a></td>
+        <td><a href="{% url 'support_ticket_detail' t.pk %}">{{ t.subject }}</a></td>
+        <td>{{ t.user.username }}</td>
+        <td>{{ t.get_category_display }}</td>
+        <td>
+          {% if t.status == 'open' %}<span class="badge badge-open">🟢 Open</span>
+          {% elif t.status == 'in_progress' %}<span class="badge badge-progress">🟡 In Progress</span>
+          {% else %}<span class="badge badge-closed">🔴 Closed</span>{% endif %}
+        </td>
+        <td>{{ t.updated_at|date:"d.m.Y H:i" }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6" style="color:var(--ink-dim);font-style:italic;">Ticketlar yo‘q</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {% if tickets.has_other_pages %}
+  <div class="pager">
+    {% if tickets.has_previous %}<a href="?page={{ tickets.previous_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}">←</a>{% endif %}
+    {{ tickets.number }} / {{ tickets.paginator.num_pages }}
+    {% if tickets.has_next %}<a href="?page={{ tickets.next_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}">→</a>{% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

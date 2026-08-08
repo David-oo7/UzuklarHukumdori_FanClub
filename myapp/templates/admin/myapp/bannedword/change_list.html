@@ -1,0 +1,10 @@
+{% extends "admin/change_list.html" %}
+
+{% block object-tools-items %}
+  <li>
+    <a href="{% url 'admin:myapp_bannedword_bulk_add' %}" class="addlink" style="background:#c9a34e;color:#141810;">
+      + Ko'p so'z qo'shish
+    </a>
+  </li>
+  {{ block.super }}
+{% endblock %}

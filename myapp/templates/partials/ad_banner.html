@@ -1,0 +1,20 @@
+{% comment %}
+Reklama banneri partial. Ishlatilishi:
+{% include 'partials/ad_banner.html' with ads=ads_header %}
+{% endcomment %}
+{% if ads %}
+<div class="ad-slot">
+  {% for ad in ads %}
+  <div class="ad-banner">
+    <span class="ad-badge">Reklama</span>
+    {% if ad.url %}
+    <a href="{% url 'ad_click' ad.id %}" {% if ad.open_new_tab %}target="_blank" rel="noopener sponsored"{% else %}rel="sponsored"{% endif %} class="ad-banner-link">
+      <img src="{{ ad.image.url }}" alt="{{ ad.title }}" loading="lazy">
+    </a>
+    {% else %}
+    <img src="{{ ad.image.url }}" alt="{{ ad.title }}" loading="lazy">
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
