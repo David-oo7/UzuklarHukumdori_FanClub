@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'channels',
     'myapp',
+    'support_bot'
 ]
 
 MIDDLEWARE = [
